@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<title></title>
+<meta name="author" content="Max Irwin" >
+<meta name="date" content="2013-09-04T12:39:24+0100" >
+<meta name="copyright" content="Max Irwin">
+<meta name="keywords" content="kriegspiel, chess, variant, game">
+<meta name="description" content="The Kriegspiel chess variant">
+<meta name="robots" content="NOINDEX, NOFOLLOW">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/html; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link rel="stylesheet" href="/css/chessboard-0.3.0.min.css">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+	<header>
+		<h1>Kriegspiel</h1>
+	</header>
+	
+	<section id="game">
+		<div id="wait"><h2>Waiting for your opponent to join!</h2></div>
+		<div id="board"></div>
+		<div id="console"><ul><li class="white-message">binarymax has joined as white!</li><li class="black-message">hedgehog22 has joined as black!</li></ul></div>
+	</section>
+	
+	<footer>
+		<button>Check for Pawn Captures</button>
+		<button>Reveal Square</button>
+		<button>Offer Draw</button>
+		<button>Resign</button>
+
+
+	<!--
+		<pre>
+		
+Rules
+Kriegspiel is a battle between two players. However, a third person is necessary to act as a referee.
+
+One needs three boards for the game. The main idea of Kriegspiel is that players only get to see their own pieces, but do not see the pieces of their opponent, and do not know what moves the opponent has made - they only have some partial information (see below) that allows them to guess where the opponents pieces are. Only the referee knows exactly the real position of both sets of pieces.
+
+Players move turn-wise, just as in normal chess. Each turn, a player attempts a move. When this move is legal, the referee announces that the player has moved, and the turn is done. When the move is not legal, the referee also announces that the player attempted an illegal move, and the player must make a new attempt to move, until he makes a legal move.
+
+All announcements by the referee and requests by the players are heard by all parties.
+
+When a move gives check, the referee announces this, and also announces the direction in which check is given: either on the row, on the column, on the small diagonal, on the large diagonal, or by a knight. However, the place of the checking piece is not told (but sometimes can be guessed or deduced correctly.)
+
+When a piece captures another piece, the referee announces this, and also the field where the capture has taken place. For instance, the referee could announce: White has captured on d3. The referee does not announce with which type of piece the capture has been taken place, or which type of piece is taken. There is one exception to this latter rule, namely en-passant capture is announced, for instance, the referee could announce: Black has taken en-passant on f3.
+
+To avoid that players have to make long series of wrong guesses of pawn captures each turn, a player may ask: Are their any pawn captures?, usually abbreviated to Any?. The referee either answers No, if the player cannot capture a piece with a pawn, or Try!, if there are one or more possible capturing moves with a pawn of the player. In the latter case, the player must make at least one attempt to capture with a pawn (if unsuccessful, the player may continue such attempts or attempt other moves at will).
+
+In case that a player makes moves of which he knows that are illegal (for instance, asking Any when he has no pawns left), (which he might do to confuse the opponent; this is considered `bad manners'), the referee says Impossible, such that the opponent is not confused by this. 
+
+				
+		</pre>
+
+		Lovenheim variant:
+		<pre>
+			When an illegal move is attempted, the square is announced
+			You can only attempt an illegal move if it would otherwise be a valid move if only your pieces are on the board.
+			As an option, before you attempt any moves, you may ask if a square is occupied within a king's moving distance of any of your pieces to be announced.  The referee announces 'occupied' or 'not occupied'
+			During the 'any pawn captures', if there is a valid capture and the player attempts an illegal capture - that attempted capture square is announced
+		</pre>
+		
+		
+		Possible Announcements:
+		<pre>
+			[color] has moved
+			[color] has moved and has placed [color] in check
+			[color] has moved and has placed [color] in checkmate
+			[color] has moved and has placed [color] in stalemate
+			[color] has attempted an illegal move to [square]
+			[color] has captured on [square]
+			[color] has captured on [square], en pessant!
+			[color] has promoted
+			[square] is occupied
+			[square] is not occupied
+			There are pawn captures - you must attempt one
+			There are no pawn captures
+		</pre>
+	-->		
+		
+	</footer>	
+	
+	<script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/js/chessboard_custom.js"></script>
+	<script type="text/javascript" src="/js/kriegspiel.js"></script>
+
+</body>
+</html>

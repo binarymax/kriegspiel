@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<title>KRIEGSPIEL</title>
+<meta name="author" content="Max Irwin" >
+<meta name="date" content="2013-09-06T10:58:33+0100" >
+<meta name="copyright" content="Max Irwin">
+<meta name="keywords" content="kriegspiel, chess, variant, game">
+<meta name="description" content="The Kriegspiel chess variant">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/html; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="home">
+
+	<header class="home">
+		<h1>KR<span class="faded-logo">IE</span>GSP<span class="faded-logo">IE</span>L</h1>
+		<h2>Join or start a game of <span id="type"></span> kriegspiel!</h2>
+	</header>
+	
+	<div class="alerts"></div>
+	
+	<section class="middle">
+
+			<article>
+				<div id="login" class="hidden">
+					<form method="POST" action="/join" id="loginform">
+					<h3>Login or Create an Account:</h3>
+					<div id="account" class="content left">
+						<label><input type="text" name="username" id="username" /> username <span id="newusername"></span></label><br />
+						<label><input type="password" name="password1" id="password1" /> password</label><br />
+						<div id="newfields" class="hidden">				
+						<label><input type="password" name="password2" id="password2" /> password (retype)</label><br />
+						<label><input type="text" name="email" /> email (optional)</label><br />
+						</div>
+						<label id="newaccount"><input type="checkbox" name="newaccount"/> Create a new account?</label><br />
+						<br />
+					</div>
+					<div class="action right">
+						<input type="submit" id="submit" name="submit" value="Login">
+					</div>
+					</form>
+				</div>
+				<div id="session" class="hidden">
+					<div class="left"><h3>Welcome, <span id="sessionusername"></span>!</h3></div>
+					<div class="right" style="margin-top:20px;margin-right:0px;"><a href="/logout">logout</a></div>
+					<div class="clear content" style="margin-bottom:10px;"><div class="starting parent">Start a new game of Kriegspiel! <label>(<input type="radio" name="startcolor" value="white" checked="checked" />as white)</label> <label>(<input type="radio" name="startcolor" value="black" />as black)</label><button class="join mouseover">Start!</button></div></div>
+				</div>
+			</article>
+			
+			<hr>
+	
+			<article>
+				<form method="POST" action="/join" id="joinform">
+					<h3>Join a game waiting for an opponent:</h3>
+					<ul id="open" class="content">
+						<li class="waiting parent">hedgehog22(white) is waiting for an opponent(black) <button class="join mouseover">Join!</button></li>
+					</ul>
+				</form>
+			</article>
+		
+			<hr>	
+	
+			<article>
+				<h3>Games in progress:</h3>
+				<ul class="content">
+					<li class="happening">hedgehog22(white) versus binarymax(black)</li>
+				</ul>
+			</article>
+		
+	</section>
+	
+	<footer class="home">
+		<div class="content">
+			Copyright &copy; 2013, krgspl.com | Privacy Policy
+		</div>
+	</footer>	
+	
+	<script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/js/games.js"></script> 	
+	
+</body>
+</html>
