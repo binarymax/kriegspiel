@@ -225,9 +225,9 @@ article > .announcements {
 #console {
 	float:left;	
 	margin-top:78px;
-	margin-left:50px;
+	margin-left:20px;
 	height:596px;
-	width:220px;
+	width:280px;
 	border:2px solid #333;
 	overflow-y:auto;
 	background-color:white;
