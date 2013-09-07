@@ -9,10 +9,14 @@ var express = require('express')
   , path = require('path')
   , redis = require('redis')
   , redstore = require('connect-redis')(express)
-//  , sub = redis.createClient()
+  , sessionstore = new redstore()
+  , secrets = require('./secrets')
   , db = require('./lib/db')
   , security = require('./lib/security')
-  , spiel = require('./lib/spiel');
+  , spiel = require('./lib/spiel')
+  , cookies = require('express/node_modules/cookie')
+  , connectutils = require('express/node_modules/connect/lib/utils');
+  
 
 var app = express();
 
@@ -26,7 +30,7 @@ app.configure(function() {
 	app.use(express.logger('dev'));
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.session({secret:"hccm@nag3R",store:new redstore,cookie:{maxAge:4E9}}));  
+	app.use(express.session({secret:secrets.redis,store:sessionstore,cookie:{maxAge:4E9}}));  
 	app.use(express.methodOverride());
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public')));
@@ -39,6 +43,15 @@ app.configure(function() {
 	  app.use(express.errorHandler());
 	}
 });
+
+var newGame = function(req,res) {
+  var gameid = Math.floor(Math.random()*100000).toString(16);
+  res.redirect('/games/'+gameid);
+};
+
+var joinGame = function(req,res,gameid) {
+  res.redirect('/games/'+gameid);
+};
 
 //-------------------------------------------
 //Routes
@@ -94,11 +107,6 @@ app.get('/games/?',function(req,res){
 
 });
 
-
-app.get('/games/:gameid',security.authenticateUser,function(req,res){
-	res.sendfile('public/game.html');
-});
-
 app.get('/usernames/:username',function(req,res){
 	security.existingUser(req.params.username,function(isExists){
 		res.send(200,isExists);
@@ -115,18 +123,16 @@ app.get('/session',function(req,res){
 	}
 });
 
-app.get('/logout',function(req,res){
-	req.session.destroy(function(){res.redirect('/join')});
+//Authenticated Routes
+app.get('/start/?', security.authenticateUser, newGame);
+
+app.get('/games/:gameid',security.authenticateUser,function(req,res){
+	res.sendfile('public/game.html');
 });
 
-var newGame = function(req,res) {
-  var gameid = Math.floor(Math.random()*100000).toString(16);
-  res.redirect('/games/'+gameid);
-};
-
-var joinGame = function(req,res,gameid) {
-  res.redirect('/games/'+gameid);
-};
+app.get('/logout',security.authenticateUser,function(req,res){
+	req.session.destroy(function(){res.redirect('/join')});
+});
 
 //-------------------------------------------
 //Express
@@ -136,16 +142,49 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 //-------------------------------------------
 //WebSockets:
+
+//Gets the connect-redis signed session cookie for the socket
+var parseSessionCookie = function(cookie, callback) {
+  var parsed = cookies.parse(cookie);
+  var signed = connectutils.parseSignedCookies(parsed,secrets.redis);
+  if (signed && signed['connect.sid']) { 
+	sessionstore.get(signed['connect.sid'],callback);
+  } else {
+  	callback(null,null);
+  }
+}
+
 var io = require('socket.io').listen(server);
-io.sockets.on('connection', function (socket) {
-	socket.on('join', function (data) {
-		socket.set('username',data.username);
-		socket.get('gameid',function(err,name){
-			console.log(err,name);
+io.configure(function(){
+	io.set('authorization',function(handshake,callback){
+		parseSessionCookie(handshake.headers.cookie, function(err,session) {
+			if (!err && session && session.username) {
+				callback(null,true);
+			} else if (!err) {
+				callback(null,false);
+			} else {
+				callback(err,false);
+			}
 		});
-		spiel.join(data.gameid, socket);
 	});
-	socket.on('move', function (data) {
-		spiel.move(data.gameid, data.source, data.target)		
+});
+
+io.sockets.on('connection', function (socket) {
+	parseSessionCookie(socket.handshake.headers.cookie, function(err,session) {
+		if(!err && session && session.username) {
+			socket.set('username',session.username);
+			console.log('------>',session.username);		
+			socket.on('join', function (data) {				
+				socket.get('gameid',function(err,name){
+					console.log(err,name);
+				});
+				spiel.join(data.gameid, socket);
+			});
+			
+			socket.on('move', function (data) {
+				spiel.move(data.gameid, data.source, data.target)		
+			});
+			
+		}
 	});
 });
