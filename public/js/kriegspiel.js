@@ -1,14 +1,18 @@
 var kriegspiel = (function() {
 
 	var _socket = io.connect('http://'+document.domain);
-	var _gameid = location.href.substr(location.href.indexOf('/game/')+6);
+	var _gameid = location.href.substr(location.href.indexOf('/games/')+7);
 	var _active = false;
 	var _color;
 	var _board;
-	 
+
 	//Announces a message to the player
 	var announce = function(data) {
-		$("#console > ul").append("<li class='"+data.who+"-message'>"+data.message+"</li>")
+		var $list = $("#console > ul");
+		var $console = $("#console");
+		var $message = $("<li class='"+data.who+"-message'>"+data.message+"</li>")
+		$list.append($message);
+		$console.animate({scrollTop:$console.height()},800);
 	};
 
 	//Activates player's ability to move
@@ -35,6 +39,18 @@ var kriegspiel = (function() {
 		if (data.type === 'start') activate();
 		else deactivate();
 	};
+
+	var onImpossible = function (data) {
+		announce(data);
+		if (data.type === 'start') activate();
+		else deactivate();
+	}
+
+	var onGameover = function (data) {
+		announce(data);
+		if (data.type === 'start') activate();
+		else deactivate();
+	}
 
 	var onIllegal = function (data) {
 		announce(data);
@@ -101,6 +117,8 @@ var kriegspiel = (function() {
 	//-----------------------------------------
 	//Bind events	
 	_socket.on('kriegspiel', onKriegspiel);
+	_socket.on('impossible', onImpossible);
+	_socket.on('gameover', onGameover);	
 	_socket.on('illegal', onIllegal);
 	_socket.on('capture', onCapture);
 	_socket.on('move', onMove);

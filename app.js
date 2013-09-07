@@ -103,8 +103,12 @@ app.post('/join/?', function(req,res) {
 	}
 });
 
-app.get('/games/?',function(req,res){
 
+app.get('/games/?',function(req,res){
+	var state = spiel.state(req.query.state||'active');
+	db.findGamesByFilter({state:state},function(rec){ return {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state)} },function(err,records){
+		res.send(200,records);
+	});
 });
 
 app.get('/usernames/:username',function(req,res){
@@ -172,19 +176,18 @@ io.configure(function(){
 io.sockets.on('connection', function (socket) {
 	parseSessionCookie(socket.handshake.headers.cookie, function(err,session) {
 		if(!err && session && session.username) {
-			socket.set('username',session.username);
-			console.log('------>',session.username);		
-			socket.on('join', function (data) {				
-				socket.get('gameid',function(err,name){
-					console.log(err,name);
+			socket.set('username',session.username,function(){
+				socket.on('join', function (data) {				
+					socket.get('gameid',function(err,name){
+						console.log(err,name);
+					});
+					spiel.join(data.gameid, {session:session, socket:socket});
 				});
-				spiel.join(data.gameid, socket);
-			});
-			
-			socket.on('move', function (data) {
-				spiel.move(data.gameid, data.source, data.target)		
-			});
-			
+				
+				socket.on('move', function (data) {
+					spiel.move(data.gameid, data.source, data.target, {session:session, socket:socket});		
+				});
+			});			
 		}
 	});
 });

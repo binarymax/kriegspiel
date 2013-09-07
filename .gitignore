@@ -6,10 +6,11 @@ lib-cov
 *.out
 *.pid
 *.gz
+secrets.js
+*~
 
 pids
 logs
 results
 
 npm-debug.log
-*~

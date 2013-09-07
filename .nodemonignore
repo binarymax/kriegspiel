@@ -1,0 +1,9 @@
+# .nodemonignore file
+#
+./public/*
+./public/js/*
+./public/css/*
+./public/img/*
+./.git/*
+./node_modules/*
+*~$
