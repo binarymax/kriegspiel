@@ -1,11 +1,14 @@
 var kriegspiel = (function() {
 
+	var _colors = {'w':'white','b':'black'};
 	var _socket = io.connect('http://'+document.domain);
 	var _gameid = location.href.substr(location.href.indexOf('/games/')+7);
 	var _active = false;
 	var _color;
 	var _board;
-
+	var _p,_o;
+	var _temp;
+	
 	//Announces a message to the player
 	var announce = function(data) {
 		var $list = $("#console > ul");
@@ -17,11 +20,13 @@ var kriegspiel = (function() {
 
 	//Activates player's ability to move
 	var activate = function() {
+		$("img[data-piece^="+_o+"]").addClass("faded-piece");
 		_active=true;
 	}
 	
 	//Deactivates player's ability to move
 	var deactivate = function() {
+		$("img[data-piece^="+_o+"]").addClass("faded-piece");
 		_active=false;
 	}
 	
@@ -29,32 +34,34 @@ var kriegspiel = (function() {
 	//Socket Events
 	var onMove = function (data) {
 		announce(data);
-		if (data.type === 'start') activate();
+		if (data.action === 'start') activate();
 		else deactivate();
 	};
 	
 	var onCapture = function (data) {
 		announce(data);
 		if (data.who !== _color) _board.trash(data.square);
-		if (data.type === 'start') activate();
+		if (data.action === 'start') activate();
 		else deactivate();
 	};
 
-	var onImpossible = function (data) {
+	var onGameover = function (data) {
 		announce(data);
-		if (data.type === 'start') activate();
+		if (data.action === 'start') activate();
 		else deactivate();
 	}
 
-	var onGameover = function (data) {
+	var onImpossible = function (data) {
 		announce(data);
-		if (data.type === 'start') activate();
+		_board.position(_temp);
+		if (data.action === 'start') activate();
 		else deactivate();
 	}
 
 	var onIllegal = function (data) {
 		announce(data);
-		if (data.type === 'start') activate();
+		_board.position(_temp);
+		if (data.action === 'start') activate();
 		else deactivate();
 	}
 	
@@ -62,36 +69,47 @@ var kriegspiel = (function() {
 		announce(data);
 	}
 
+	//Fired when player joins
 	var onKriegspiel = function(data) {
 		_color = data.color;
-		var p = _color.charAt(0);
-		var o = p==='w'?'b':'w';		
+		_p = _color.charAt(0);
+		_o = _p==='w'?'b':'w';
 
 		$("#wait").remove();
 		$("#board").show();
-				
-		_board = new ChessBoard('board', {
-		  draggable: true,
-		  dropOffBoard: 'trash',
-		  sparePieces: true,
-		  onDrop:drop,
-		  orientation: _color,
-		  fade: o
-		});
 
-		_board.start(false);
+		if(!_board) {
+			_board = new ChessBoard('board', {
+			  draggable: true,
+			  dropOffBoard: 'trash',
+			  sparePieces: true,
+			  onDrop:drop,
+			  orientation: _color,
+			  fade: _o,
+			}); 
+			_board.start(false);
+			$(".spare-pieces-bottom-ae20f").hide();
+		}
+
 		
-		$("img[data-piece^="+o+"]").addClass("faded-piece");
-		$(".spare-pieces-bottom-ae20f").hide();
+		var turn = 'white';
+		if (data.game) {
+			console.log(data.game.scratch);
+			_board.position(data.game.scratch||data.game.position||'start',false);
+			turn = _colors[data.game.turn||'w'];
+		}
+
+		if (_color===turn) activate();
 		
-		if (_color==='white') activate();
 	};
 
 	//-----------------------------------------
 	//Client events	
 	var move = function(source, target, piece, newPos, oldPos, orientation) {
-		_socket.emit('move',{gameid:_gameid,source:source,target:target});
-		deactivate();		
+		var scratch = ChessBoard.objToFen(newPos);
+		console.log(scratch);
+		_socket.emit('move',{gameid:_gameid,source:source,target:target,scratch:scratch});
+		deactivate();
 	}
 
 	var drop = function(source, target, piece, newPos, oldPos, orientation) {
@@ -110,12 +128,14 @@ var kriegspiel = (function() {
 			return 'snapback';
 		} else {
 			//Attempt a move
+			_temp = oldPos;
 			move(source, target, piece, newPos, oldPos, orientation);
 		}
 	}
 
 	//-----------------------------------------
 	//Bind events	
+	_socket.on('welcome', announce);
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
 	_socket.on('gameover', onGameover);	

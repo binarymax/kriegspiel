@@ -207,6 +207,10 @@ article > .announcements {
 	top:-5px;
 }
 
+#game {
+	width:1000px;
+}
+
 #wait {
 	float:left;
 	width:600px;
@@ -225,9 +229,9 @@ article > .announcements {
 #console {
 	float:left;	
 	margin-top:78px;
-	margin-left:20px;
+	margin-left:65px;
 	height:596px;
-	width:280px;
+	width:300px;
 	border:2px solid #333;
 	overflow-y:auto;
 	background-color:white;
