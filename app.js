@@ -180,6 +180,22 @@ io.sockets.on('connection', function (socket) {
 					spiel.move(data.gameid, data.source, data.target, data.scratch, {session:session, socket:socket});		
 				});
 				
+				socket.on('pawncaptures', function (data) {
+					spiel.pawncaptures(data.gameid, {session:session, socket:socket});		
+				});
+
+				socket.on('occupies', function (data) {
+					spiel.occupies(data.gameid, data.target, {session:session, socket:socket});		
+				});
+
+				socket.on('resign', function (data) {
+					spiel.resign(data.gameid, {session:session, socket:socket});		
+				});
+
+				socket.on('offerdraw', function (data) {
+					spiel.offerdraw(data.gameid, {session:session, socket:socket});		
+				});
+
 				/*
 				socket.on('disconnect', function() {
 					spiel.disconnect(username);

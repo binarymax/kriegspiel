@@ -175,11 +175,15 @@ var kriegspiel = (function() {
 
 	//-----------------------------------------
 	//Client events	
+	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
+
+	//Moves a piece on the server
 	var move = function(source, target, piece, newPos, oldPos, orientation) {
 		_socket.emit('move',{gameid:_gameid,source:source,target:target,scratch:getscratch(newPos)});
 		deactivate();
 	}
 
+	//Piece was dropped on the chessboard
 	var drop = function(source, target, piece, newPos, oldPos, orientation) {
 		var color = piece.charAt(0);
 		if (color!==_color.charAt(0)) {
@@ -201,9 +205,33 @@ var kriegspiel = (function() {
 		}
 	}
 
+	
+	var doPawncaptures = function(e){
+		if(_active) _socket.emit('pawncaptures',{gameid:_gameid});	
+		return nobubble(e);
+	};
+
+	var doOccupies = function(e){
+		if(_active) _socket.emit('occupies',{gameid:_gameid,target:'d5'});
+		return nobubble(e);
+	};
+
+	var doOfferdraw = function(e){
+		return nobubble(e);
+	};
+
+	var doResign = function(e){
+		return nobubble(e);
+	};
+
 	//-----------------------------------------
 	//Bind events	
 	_socket.on('welcome', announce);
+	_socket.on('pawncaptures', announce);
+	_socket.on('occupies', announce);
+	_socket.on('offerdraw', announce);	
+	_socket.on('acceptdraw', announce);	
+	_socket.on('declinedraw', announce);	
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
 	_socket.on('gameover', onGameover);	
@@ -216,5 +244,12 @@ var kriegspiel = (function() {
 	//-----------------------------------------
 	//Trigger event to join the game
 	_socket.emit('join',{gameid:_gameid});
+	
+	//-----------------------------------------
+	//Trigger events from buttons
+	$("#pawncaptures").on("click",doPawncaptures);
+	$("#occupies").on("click",doOccupies);
+	$("#offerdraw").on("click",doOfferdraw);
+	$("#resign").on("click",doResign);
 
 })();
