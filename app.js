@@ -78,28 +78,7 @@ app.post('/join/?', function(req,res) {
 		}
 	} else {
 		//No session or username
-		var newaccount=req.body.newaccount;
-		var username=req.body.username;
-		var password1=req.body.password1;
-		if (newaccount==='on') {
-			//New account setup
-			security.addUser(req,res,function(isValid){
-				res.redirect('/join?message=logincreated');
-			});
-		} else if (username && password1) {
-			//login
-			security.loginUser(req,res,function(isValid){
-				if(isValid) {
-					res.redirect('/join?message=login');
-				} else {
-					res.redirect('/join?error=badlogin');
-				}
-			});
-		} else {
-			//Missing username or password
-			res.redirect('/join/?error=missinglogin');
-			return false;
-		}
+		security.loginOrCreateUser(req,res);
 	}
 });
 
@@ -173,6 +152,7 @@ var parseSessionCookie = function(cookie, callback) {
 }
 
 var io = require('socket.io').listen(server);
+io.set('log level', 1); //not so loud!
 io.configure(function(){
 	io.set('authorization',function(handshake,callback){
 		parseSessionCookie(handshake.headers.cookie, function(err,session) {
