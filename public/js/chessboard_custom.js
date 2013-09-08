@@ -658,12 +658,13 @@ function buildPieceImgSrc(piece) {
 }
 
 function buildPiece(piece, hidden, id) {
+  var fadeClass = cfg.fade===piece.charAt(0)?' faded-piece':'';
   var html = '<img src="' + buildPieceImgSrc(piece) + '" ';
   if (id && typeof id === 'string') {
     html += 'id="' + id + '" ';
   }
   html += 'alt="" ' +
-  'class="' + CSS.piece + '" ' +
+  'class="' + CSS.piece + fadeClass + '" ' +
   'data-piece="' + piece + '" ' +
   'style="width: ' + SQUARE_SIZE + 'px;' +
   'height: ' + SQUARE_SIZE + 'px;';
