@@ -38,6 +38,21 @@ footer {
 	font-size:28px;
 }
 
+.game > h1 {
+	text-align:center;
+	font-size:28px;
+	font-weight:bold;
+	margin:5px;
+}
+
+.game > h2 {
+	text-align:center;
+	font-size:28px;
+	font-weight:bold;
+	margin:5px;
+}
+
+
 article {
 	clear:both;
 }
@@ -47,9 +62,14 @@ article .content {
 }
 
 header.home {
-	width:100%;
+	width:1000px;
 	background-color: #fff;
 	border-bottom:2px solid #333; 
+}
+
+header.game {
+	width:100%;
+	padding:5px;
 }
 
 footer.home {

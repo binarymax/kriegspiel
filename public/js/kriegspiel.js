@@ -31,9 +31,11 @@ var kriegspiel = (function() {
 			$list.append($message);
 			if(!noscroll) setTimeout(function(){
 				var $last = $list.find("li:last");
-				var top = $last.offset().top + $last.height();
+				var top = Math.floor($last.offset().top + $last.height());
 				$console.animate({scrollTop:top},500);
 			},100);
+		} else if (data.type==="welcome" && data.username) {
+			$("#player"+data.who).text(data.username);
 		}
 	};
 
@@ -207,6 +209,7 @@ var kriegspiel = (function() {
 	_socket.on('gameover', onGameover);	
 	_socket.on('illegal', onIllegal);
 	_socket.on('capture', onCapture);
+	_socket.on('check', announce);
 	_socket.on('move', onMove);
 	_socket.on('end', onEnd);
 	
