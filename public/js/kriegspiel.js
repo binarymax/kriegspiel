@@ -1,16 +1,23 @@
 var kriegspiel = (function() {
 
-	var _colors = {'w':'white','b':'black'};
-	var _colorx = {'white':'black','black':'white'};
-	var _socket = io.connect('http://'+document.domain);
-	var _gameid = location.href.substr(location.href.indexOf('/games/')+7);
-	var _active = false;
+	var _variant = {'occupies':true}; 
+	var _colors  = {'w':'white','b':'black'};
+	var _colorx  = {'white':'black','black':'white'};
+	var _socket  = io.connect('http://'+document.domain);
+	var _gameid  = location.href.substr(location.href.indexOf('/games/')+7);
+	var _active  = false;
 	
 	var _color; //Your color
 	var _oppos; //Your opponents color
 	var _board; //Your board
 	var _p,_o;  //First chars of your color and opponents color
 	var _temp;  //Temporary position to reset illegal moves
+
+	//Common board functions:
+	var ranks = '1,2,3,4,5,6,7,8'.split(',');
+	var files = 'a,b,c,d,e,f,g,h'.split(','); 
+	var getFile  = function(f){ return f.charCodeAt(0)-97; }  //returns array index of file letter
+	var getRank  = function(r){ return parseInt(r)-1; } //returns array index of rank number
 
 	//Initializes the color variables
 	var setcolor = function(color) {
@@ -211,8 +218,66 @@ var kriegspiel = (function() {
 		return nobubble(e);
 	};
 
+
+	var clearOccupies = function() { for(var f=0;f<8;f++) for(var r=0;r<8;r++) $('.square-'+files[f]+ranks[r]).removeClass('highlight-square').removeClass('highlight-occupies'); }
+
+	var doOccupiesSquare = function(e) {
+		clearOccupies();
+		if(_active && _variant.occupies) {
+			var square = $(this).attr("data-square");
+			console.log(square);
+			_socket.emit('occupies',{gameid:_gameid,target:square});
+		}
+		return nobubble(e);
+	}
+
 	var doOccupies = function(e){
-		if(_active) _socket.emit('occupies',{gameid:_gameid,target:'d5'});
+		clearOccupies();
+		if(_active && _variant.occupies) {
+			var position = _board.position();
+			var hasPiece = function(sq) { return (position.hasOwnProperty(sq) && position[sq].charAt(0)===_p)?true:false; }
+			var f,fm,fl,fr; //file middle,left,right
+			var r,rm,ra,rb; //rank middle,above,below
+			var adj = {};
+			for(var sq in position) {
+				if (hasPiece(sq)) {
+					f = getFile(sq.charAt(0));
+					fm = files[f];
+					fl = f>0?files[f-1]:'';
+					fr = f<7?files[f+1]:'';
+
+					r = getRank(sq.charAt(1));
+					rm = ranks[r];
+					ra = r>0?ranks[r-1]:'';
+					rb = r<7?ranks[r+1]:'';
+
+					if(fl) {
+						if(ra && !hasPiece(fl+ra)) adj[fl+ra]=1;
+						if(rm && !hasPiece(fl+rm)) adj[fl+rm]=1;
+						if(rb && !hasPiece(fl+rb)) adj[fl+rb]=1;
+					}
+					
+					if(fm) {
+						if(ra && !hasPiece(fm+ra)) adj[fm+ra]=1;
+						if(rm && !hasPiece(fm+rm)) adj[fm+rm]=1;
+						if(rb && !hasPiece(fm+rb)) adj[fm+rb]=1;
+					}
+					
+					if(fr) {
+						if(ra && !hasPiece(fr+ra)) adj[fr+ra]=1;
+						if(rm && !hasPiece(fr+rm)) adj[fr+rm]=1;
+						if(rb && !hasPiece(fr+rb)) adj[fr+rb]=1;
+					}
+
+				}
+			}
+			for(var sq in adj) {
+				if(adj.hasOwnProperty(sq) && adj[sq]===1) {
+					$('.square-'+ sq).attr("data-square",sq).addClass('highlight-square').addClass('highlight-occupies');
+				}
+			}
+
+		}
 		return nobubble(e);
 	};
 
@@ -251,5 +316,7 @@ var kriegspiel = (function() {
 	$("#occupies").on("click",doOccupies);
 	$("#offerdraw").on("click",doOfferdraw);
 	$("#resign").on("click",doResign);
+
+	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
 
 })();

@@ -295,3 +295,11 @@ article > .announcements {
 .faded-piece {
 	opacity: 0.5;
 }
+
+.highlight-square {
+	border:10px solid rgba(255,0,0,0.5);
+}
+
+.highlight-occupies:hover {
+	background-color:rgba(255,0,0,0.5);
+}

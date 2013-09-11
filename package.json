@@ -1,12 +1,19 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "kriegspiel",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
     "express": "3.3.4",
-    "jade": "*"
+    "jade": "*",
+    "debug": "0.7.2",
+    "hiredis":"0.1.15",
+    "redis": "0.8.4",
+    "connect-redis":"1.2.0",
+    "chess.js":"0.1.0",
+    "rethinkdb": "1.8.0-0",
+    "socket.io":"0.9.16"    
   }
 }
