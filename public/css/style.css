@@ -303,3 +303,19 @@ article > .announcements {
 .highlight-occupies:hover {
 	background-color:rgba(255,0,0,0.5);
 }
+
+.banner {
+	position:absolute;
+	top:0px;
+	margin:0px;
+	padding:8px;
+	width:100%;
+	z-index:505;
+	height:40px;
+	text-align:center;
+	font-size:18px;
+	font-weight:bold;
+}
+
+.banner.error   { background-color: #E30804; color: #fff; }
+.banner.success { background-color: #67B11B; color: #fff; }

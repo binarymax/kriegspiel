@@ -8,12 +8,26 @@
 	};
 	document.getElementById("type").innerHTML = querystring("type")||"classic";
 
+	var messages = {
+		"goodlogin": "Welcome back!",
+		"createdlogin": "Thanks for joining!  Get ready for some Kriegspiel",
+		"badlogin": "Sorry, incorrect username or password",
+		"missinglogin": "Please provide both username and password",
+		"login": "Sorry, you need to login before you can do that"
+	}
+
 	//Shows a success banner 
-	var alertSuccess = function(){
+	var alertSuccess = function(message){
+		$(".banner").remove();
+		var banner = $("<div class='banner success'></div>").text(messages[message]||message);
+		$(document.body).append(banner);
 	};
 	
 	//Shows an error banner
-	var alertError = function(){
+	var alertError = function(message){
+		$(".banner").remove();
+		var banner = $("<div class='banner error'></div>").text(messages[message]||message);
+		$(document.body).append(banner);
 	};
 	
 	//Checks if a username exists in the database
@@ -99,5 +113,9 @@
 			$("#login").show();
 		}
 	},"json");
+
+
+	if (querystring("error")) alertError(querystring("error"));
+	if (querystring("message")) alertSuccess(querystring("message"));
 
 })();
