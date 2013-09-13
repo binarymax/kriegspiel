@@ -214,7 +214,8 @@ var kriegspiel = (function() {
 			  sparePieces: true,
 			  onDrop:drop,
 			  orientation: _color,
-			  fade: _o
+			  fade: _o,
+			  assetHost: 'http://static.krgspl.com/krgspl'
 			}); 
 
 			_board.start(false);

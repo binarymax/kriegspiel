@@ -7,10 +7,11 @@ lib-cov
 *.pid
 *.gz
 secrets.js
+.tdldb.bak
 *~
 
 pids
 logs
 results
-
+node_modules
 npm-debug.log
