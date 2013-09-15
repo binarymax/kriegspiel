@@ -199,6 +199,16 @@ var kriegspiel = (function() {
 		announce(data);
 	}
 
+	var onInactive = function (data) {
+		announce(data);
+		_board.position(_temp);
+	}
+
+	var onFinished = function (data) {
+		announce(data);
+		_board.position(_temp);
+	}
+
 	//Fired when player joins
 	var onKriegspiel = function(data) {
 
@@ -338,6 +348,8 @@ var kriegspiel = (function() {
 	_socket.on('offerdraw', announce);	
 	_socket.on('acceptdraw', announce);	
 	_socket.on('declinedraw', announce);	
+	_socket.on('inactive', onInactive);
+	_socket.on('finished', onFinished);
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
 	_socket.on('gameover', onGameover);	
