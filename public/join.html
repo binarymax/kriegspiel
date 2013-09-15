@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-13T11:46:19+0100" >
+<meta name="date" content="2013-09-15T17:36:10+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -55,8 +55,7 @@
 			<article>
 				<form method="POST" action="/join" id="joinform">
 					<h3>Join a game waiting for an opponent:</h3>
-					<ul id="open" class="content">
-						<li class="waiting parent">hedgehog22(white) is waiting for an opponent(black) <button class="join mouseover">Join!</button></li>
+					<ul id="inactive" class="content">
 					</ul>
 				</form>
 			</article>
@@ -65,11 +64,16 @@
 	
 			<article>
 				<h3>Games in progress:</h3>
-				<ul class="content">
-					<li class="happening">hedgehog22(white) versus binarymax(black)</li>
+				<ul id="active" class="content">
 				</ul>
 			</article>
 		
+			<article>
+				<h3>Games completed:</h3>
+				<ul id="finished" class="content">
+				</ul>
+			</article>
+
 	</section>
 	
 	<footer class="home">
@@ -78,6 +82,18 @@
 		</div>
 	</footer>	
 	
+	<script type="text/template" data-template="inactive">
+		<li class="waiting parent" data-gameid="{{gameid}}">{{white}}(white) is waiting for an opponent(black) <button class="join mouseover">Join!</button></li>	
+	</script>	
+	
+	<script type="text/template" data-template="active">
+		<li class="happening">{{white}}(white) is on move {{moves}} vs {{black}}(black)</li>	
+	</script>	
+
+	<script type="text/template" data-template="finished">
+		<li class="finished parent" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <button class="review mouseover">Review!</button></li>	
+	</script>	
+
 	<script type="text/javascript" src="http://staticmax.s3-website-us-east-1.amazonaws.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/js/games.js"></script> 	
 	

@@ -30,6 +30,26 @@
 		$(document.body).append(banner);
 	};
 	
+	//Naive jquery render
+	$.fn.render = function(template,data) {
+		var $target = this;
+		var source = $("script[data-template='"+template+"']").html();
+		console.log(source);
+		for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
+			record = data[i];
+			html = source;
+			for(var key in record) { 
+				if(record.hasOwnProperty(key)) {
+					console.log(key,record[key]);
+					rekey = new RegExp("\{\{"+key+"\}\}","g");
+					html  = html.replace(rekey,record[key]);
+				}
+			}
+			$target.append(html);
+		};
+		return $target;
+	}
+	
 	//Checks if a username exists in the database
 	var checkUsername = function(callback){
 		var username = $("#username").val();
@@ -114,6 +134,23 @@
 		}
 	},"json");
 
+	$.get("/games?state=inactive",function(data,status){
+		if(status==="success" && data) {
+			$("#inactive").render("inactive",data);
+		}		
+	});
+
+	$.get("/games?state=active",function(data,status){
+		if(status==="success" && data) {
+			$("#active").render("active",data);
+		}		
+	});
+
+	$.get("/games?state=finished",function(data,status){
+		if(status==="success" && data) {
+			$("#finished").render("finished",data);
+		}		
+	});
 
 	if (querystring("error")) alertError(querystring("error"));
 	if (querystring("message")) alertSuccess(querystring("message"));

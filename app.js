@@ -88,15 +88,17 @@ app.get('/games/?',function(req,res){
 	db.findGamesByFilter(
 		{state:state},
 		function(rec){ 
-			return {
+			var out = {
 				gameid:rec.gameid,
 				white:rec.whiteusername,
 				black:rec.blackusername,
 				state:spiel.state(rec.state),
 				turn:rec.turn,
-				moves:rec.history.length/2,
-				messages:rec.messages
-			}
+				moves:rec.history.length/2
+			};
+			
+			if(req.query.all) out.messages = rec.messages;
+			return out;
 		},
 		function(err,records){
 			res.send(200,records);
