@@ -65,9 +65,6 @@ var kriegspiel = (function() {
 		_o = _oppos.charAt(0);
 	}
 	
-	//Resets the movestate	
-	var freshmove = function() {
-	}
 	
 	//Announces a message to the player
 	var announce = function(data,noscroll) {
@@ -78,25 +75,54 @@ var kriegspiel = (function() {
 		if (data.type!=="welcome" || $list.find("li."+whatclass).length===0) {
 			var $message = $("<li class='"+ whoclass + " " + whatclass +"' data-type='" + data.type + "'>"+data.message+"</li>")
 			$list.append($message);
-			if(!noscroll) setTimeout(function(){
-				var $last = $list.find("li:last");
-				var top = Math.floor($last.offset().top + $last.height());
-				$console.animate({scrollTop:top},500);
-			},100);
-		} else if (data.type==="welcome" && data.username) {
+		}
+		if (data.type==="welcome" && data.username) {
 			$("#player"+data.who).text(data.username);
 		}
+		if(!noscroll) setTimeout(function(){
+			//Scroll to the bottom
+			var top = 0;
+			$list.find("li").each(function(){top+=$(this).height()+20;});
+			$console.animate({scrollTop:top},500);
+		},100);
 	};
 
 	//Activates player's ability to move
 	var activate = function() {
-		if(!_active) _movestate.reset(); 
+		if(!_active) _movestate.reset();		
 		_active=true;
+		resetOptions();
 	}
 	
 	//Deactivates player's ability to move
 	var deactivate = function() {
 		_active=false;
+	}
+
+	//Shows the option dialog and hides the options
+	var showDialog = function(option) {
+		$("#options").hide();
+		$("#"+option+"dialog").show();
+	}
+	
+	//Hides the option dialog and shows the options
+	var hideDialog = function(option) {
+		$(".dialog").hide();
+		$("#options").show();
+	}
+
+	var disableOption = function(option) {
+		$("#"+option).addClass("disabled").attr("disabled","disabled");
+	}
+
+	var enableOption = function(option) {
+		$("#"+option).removeClass("disabled").removeAttr("disabled");
+	}
+
+	var resetOptions = function() {
+		_movestate.okPawnCaptures()?enableOption("pawncaptures"):disableOption("pawncaptures");
+		_movestate.okDrawOffer()?enableOption("offerdraw"):disableOption("offerdraw");
+		_movestate.okOccupies()?enableOption("occupies"):disableOption("occupies");		
 	}
 
 	//Returns a scratch FEN string of only the opponents pieces
@@ -116,6 +142,7 @@ var kriegspiel = (function() {
 		$list.children().remove();
 		for(var i=0,l=messages.length;i<l;i++) {
 			announce(messages[i],i!==(l-1));
+			console.log(i,l-1);
 		}
 	}
 	
@@ -147,11 +174,7 @@ var kriegspiel = (function() {
 	//Loads the movestate from the server, and disables actions if necessary
 	var loadmovestate = function(state) {
 		_movestate.deserialize(state);
-		/*
-		if(!_movestate.okPawnCaptures()) { $("#pawncaptures").disable(); }
-		if(!_movestate.okDrawOffer()) { $("#offerdraw").disable(); }
-		if(!_movestate.okOccupies()) { $("#occupies").disable(); }
-		*/
+		resetOptions();
 	}
 		
 	//-----------------------------------------
@@ -283,6 +306,7 @@ var kriegspiel = (function() {
 		if(_active && _movestate.okPawnCaptures()) {
 			_socket.emit('pawncaptures',{gameid:_gameid});
 			_movestate.doPawnCaptures();
+			resetOptions();
 		}	
 		return nobubble(e);
 	};
@@ -298,17 +322,20 @@ var kriegspiel = (function() {
 
 	var doOccupiesSquare = function(e) {
 		clearOccupies();
+		hideDialog("occupies");
 		if(_active && _variant.occupies) {
 			var square = $(this).attr("data-square");
+			_movestate.doOccupies();
 			_socket.emit('occupies',{gameid:_gameid,target:square});
+			resetOptions();
 		}
 		return nobubble(e);
 	}
 
 	var doOccupies = function(e){
 		clearOccupies();
+		showDialog("occupies");
 		if(_active && _variant.occupies && _movestate.okOccupies()) {
-			_movestate.doOccupies();
 			var f,r;
 			var position = _board.position();
 			var hasPiece = function(sq) { return (position.hasOwnProperty(sq) && position[sq].charAt(0)===_p)?true:false; }
@@ -332,11 +359,29 @@ var kriegspiel = (function() {
 		return nobubble(e);
 	};
 
+	var doOccupiesCancel = function(e){
+		hideDialog("occupies");
+		clearOccupies();
+		return nobubble(e);
+	}
+
 	var doOfferdraw = function(e){
+		return nobubble(e);
+	};
+	var doOfferdrawYes = function(e){
+		return nobubble(e);
+	};
+	var doOfferdrawCancel = function(e){
 		return nobubble(e);
 	};
 
 	var doResign = function(e){
+		return nobubble(e);
+	};
+	var doResignYes = function(e){
+		return nobubble(e);
+	};
+	var doResignCancel = function(e){
 		return nobubble(e);
 	};
 
@@ -366,9 +411,19 @@ var kriegspiel = (function() {
 	//-----------------------------------------
 	//Trigger events from buttons
 	$("#pawncaptures").on("click",doPawncaptures);
+
 	$("#occupies").on("click",doOccupies);
+	$("#occupiescancel").on("click",doOccupiesCancel);
+
 	$("#offerdraw").on("click",doOfferdraw);
+	$("#offerdrawyes").on("click",doOfferdrawYes);
+	$("#offerdrawcancel").on("click",doOfferdrawCancel);
+
 	$("#resign").on("click",doResign);
+	$("#resignyes").on("click",doResignYes);
+	$("#resigncancel").on("click",doResignCancel);
+
+
 
 	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
 

@@ -10,12 +10,13 @@ var express = require('express')
   , redis = require('redis')
   , redstore = require('connect-redis')(express)
   , sessionstore = new redstore()
+  , cookies = require('express/node_modules/cookie')
+  , connectutils = require('express/node_modules/connect/lib/utils')
   , secrets = require('./secrets')
   , db = require('./lib/db')
   , security = require('./lib/security')
   , spiel = require('./lib/spiel')
-  , cookies = require('express/node_modules/cookie')
-  , connectutils = require('express/node_modules/connect/lib/utils');
+  , variants = require('./lib/variants').load();
   
 
 var app = express();

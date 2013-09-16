@@ -3,7 +3,7 @@
 <head>
 <title>...KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-13T18:19:27+0100" >
+<meta name="date" content="2013-09-15T19:22:25+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -28,10 +28,32 @@
 	</section>
 	
 	<footer>
-		<button id="pawncaptures">Check for Pawn Captures</button>
-		<button id="occupies">Reveal Square</button>
-		<button id="offerdraw">Offer Draw</button>
-		<button id="resign">Resign</button>
+		<div id="options">
+			<button id="pawncaptures" class="option">Check for Pawn Captures</button>
+			<button id="occupies" class="option">Reveal Square</button>
+			<button id="offerdraw" class="option">Offer Draw</button>
+			<button id="resign" class="option">Resign</button>
+		</div>
+		
+		<div id="pawncapturesdialog" class="dialog">
+			Checking for pawn captures...
+		</div>
+
+		<div id="occupiesdialog" class="dialog">
+			Choose a square to reveal<br>
+			<button id="occupiescancel" class="option">Cancel</button>
+		</div>
+
+		<div id="offerdrawdialog" class="dialog">
+			Are you sure you want to offer a draw?<br>
+			<button id="offerdrawcancel" class="option">Cancel</button><button id="offerdrawyes" class="option">Yes!</button>
+		</div>
+
+		<div id="resigndialog" class="dialog">
+			Are you sure you want to resign?<br>
+			<button id="resigncancel" class="option">Cancel</button><button id="resignyes" class="option">Yes!</button>
+		</div>
+
 	</footer>
 	
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
