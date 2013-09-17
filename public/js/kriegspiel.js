@@ -272,11 +272,32 @@ var kriegspiel = (function() {
 	//Client events	
 	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
 
+	var castle = function(castleType,newPos) {
+		if (newPos[castleType.source] === castleType.piece) {
+			newPos = _board.move(castleType.source + '-' + castleType.target);
+		}
+		return newPos;
+	};
+
+	var checkCastle = function(source,target,piece) {
+		if(piece.charAt(1).toLowerCase()!=='k') return false;
+		if(_color==='white' && source==='e1') {
+			if (target==='g1') return {source:'h1',target:'f1',piece:'wR'};
+			if (target==='c1') return {source:'a1',target:'d1',piece:'wR'};
+		} else if (source==='e8') {
+			if (target==='g8') return {source:'h8',target:'f8',piece:'bR'};
+			if (target==='c8') return {source:'a8',target:'d8',piece:'bR'};
+		}
+		return false;
+	};
+
 	//Moves a piece on the server
 	var move = function(source, target, piece, newPos, oldPos, orientation) {
+		var castleType = checkCastle(source,target,piece);
+		if (castleType) newPos = castle(castleType,newPos);
 		_socket.emit('move',{gameid:_gameid,source:source,target:target,scratch:getscratch(newPos)});
 		deactivate();
-	}
+	};
 
 	//Piece was dropped on the chessboard
 	var drop = function(source, target, piece, newPos, oldPos, orientation) {
@@ -293,12 +314,15 @@ var kriegspiel = (function() {
 		} else if (target === 'offboard') {
 			//No trash for you!
 			return 'snapback';
+		} else if (source === target) {
+			//Not a move
+			return 'snapback';			
 		} else {
 			//Attempt a move
 			_temp = oldPos;
 			move(source, target, piece, newPos, oldPos, orientation);
 		}
-	}
+	};
 
 	
 	var doPawncaptures = function(e){
