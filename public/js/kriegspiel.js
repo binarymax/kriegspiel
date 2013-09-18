@@ -142,7 +142,6 @@ var kriegspiel = (function() {
 		$list.children().remove();
 		for(var i=0,l=messages.length;i<l;i++) {
 			announce(messages[i],i!==(l-1));
-			console.log(i,l-1);
 		}
 	}
 	
@@ -274,7 +273,9 @@ var kriegspiel = (function() {
 
 	var castle = function(castleType,newPos) {
 		if (newPos[castleType.source] === castleType.piece) {
+			console.log(newPos);
 			newPos = _board.move(castleType.source + '-' + castleType.target);
+			console.log(newPos);
 		}
 		return newPos;
 	};
@@ -326,7 +327,6 @@ var kriegspiel = (function() {
 
 	
 	var doPawncaptures = function(e){
-		console.log(_movestate.okPawnCaptures());
 		if(_active && _movestate.okPawnCaptures()) {
 			_socket.emit('pawncaptures',{gameid:_gameid});
 			_movestate.doPawnCaptures();
