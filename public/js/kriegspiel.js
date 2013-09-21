@@ -23,6 +23,8 @@ var kriegspiel = (function() {
 	var _p,_o;  //First chars of your color and opponents color
 	var _temp;  //Temporary position to reset illegal moves
 
+	var _templates = {}; //UI Templates for Announcements
+
 	//Finite State Machine for the options available to the user on the move
 	var _movestate = (function(){
 		var movestate = function(){this.reset()};
@@ -72,17 +74,28 @@ var kriegspiel = (function() {
 		_p = _color.charAt(0);
 		_o = _oppos.charAt(0);
 	}
-	
+
+	//Renders data to a preloaded template 
+	var render = function(data) {
+		var regexp;
+		var message = _templates[data.type]||_templates["default"];
+		for(var key in data) {
+			if(data.hasOwnProperty(key) && typeof data[key] === "string") {
+				regexp = new RegExp("{{"+key+"}}","g");
+				message = message.replace(regexp,data[key]);
+			}
+		}
+		return message;		
+	}
 	
 	//Announces a message to the player
 	var announce = function(data,noscroll) {
 		var $list = $("#console > ul");
 		var $console = $("#console");
-		var whoclass = data.who+"-message";
-		var whatclass = data.who+"-"+data.type;
-		if (data.type!=="welcome" || $list.find("li."+whatclass).length===0) {
-			var $message = $("<li class='"+ whoclass + " " + whatclass +"' data-type='" + data.type + "'>"+data.message+"</li>")
-			$list.append($message);
+		data.whoclass = data.who+"-message";
+		data.whatclass = data.who+"-"+data.type;
+		if (data.type!=="welcome" || $list.find("li."+data.whatclass).length===0) {
+			$list.append(render(data));
 		}
 		if (data.type==="welcome" && data.username) {
 			$("#player"+data.who).text(data.username);
@@ -104,6 +117,8 @@ var kriegspiel = (function() {
 	
 	//Deactivates player's ability to move
 	var deactivate = function() {
+		disableOption("pawncaptures");
+		disableOption("occupies");
 		_active=false;
 	}
 
@@ -408,6 +423,7 @@ var kriegspiel = (function() {
 	};
 
 	var doResign = function(e){
+		_socket.emit('resign',{gameid:_gameid});
 		return nobubble(e);
 	};
 	var doResignYes = function(e){
@@ -416,7 +432,12 @@ var kriegspiel = (function() {
 	var doResignCancel = function(e){
 		return nobubble(e);
 	};
-
+	
+	//-----------------------------------------
+	//Load the templates	
+	$("script[data-type=template]").each(function(){
+		_templates[$(this).attr("data-template")] = $(this).html();
+	});
 	//-----------------------------------------
 	//Bind events	
 	_socket.on('welcome', announce);
