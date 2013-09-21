@@ -1,4 +1,12 @@
-//Hello
+/******************************************
+* KRIEGSPIEL
+*   Copyright 2013, Max Irwin
+*   MIT License
+*
+* Client Side Game Logic
+*
+*******************************************/
+
 var kriegspiel = (function() {
 
 	var _variant = {'occupies':true};

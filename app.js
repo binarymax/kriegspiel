@@ -2,6 +2,9 @@
 * KRIEGSPIEL
 *   Copyright 2013, Max Irwin
 *   MIT License
+*
+* HTTP and WebSocket Router
+*
 *******************************************/
 
 var express = require('express')
@@ -127,8 +130,24 @@ app.get('/session',function(req,res){
 app.get('/start/?', security.authenticateUser, newGame);
 
 app.get('/games/:gameid',security.authenticateUser,function(req,res){
-	res.sendfile('public/game.html');
+	var gameid = req.params.gameid;
+	spiel.find(gameid,function(game){
+		if(game.state === spiel.state('finished')) {
+			res.sendfile('public/replay.html');
+		} else {
+			res.sendfile('public/game.html');
+		}
+	});
 });
+
+
+app.get('/data/:gameid',security.authenticateUser,function(req,res){
+	var gameid = req.params.gameid;
+	spiel.find(gameid,function(game){
+		res.send(game.serialize());
+	});
+});
+
 
 app.get('/logout',security.authenticateUser,function(req,res){
 	req.session.destroy(function(){res.redirect('/join')});
