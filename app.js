@@ -48,6 +48,11 @@ app.configure(function() {
 	}
 });
 
+var okId = function(id) {
+	var reId = /^\w+$/i;
+	return reId.test(id);
+}
+
 var newGame = function(req,res) {
   var gameid = Math.floor(Math.random()*100000).toString(16);
   res.redirect('/games/'+gameid);
@@ -131,21 +136,29 @@ app.get('/start/?', security.authenticateUser, newGame);
 
 app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
-	spiel.find(gameid,function(game){
-		if(game.state === spiel.state('finished')) {
-			res.sendfile('public/replay.html');
-		} else {
-			res.sendfile('public/game.html');
-		}
-	});
+	if(okId(gameid)) {
+		spiel.find(gameid,function(game){
+			if(game.state === spiel.state('finished')) {
+				res.sendfile('public/replay.html');
+			} else {
+				res.sendfile('public/game.html');
+			}
+		});
+	} else {
+		badId();
+	}
 });
 
 
 app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
-	spiel.find(gameid,function(game){
-		res.send(game.serialize());
-	});
+	if(okId(gameid)) {
+		spiel.find(gameid,function(game){
+			res.send(game.serialize());
+		});
+	} else {
+		badId();
+	}
 });
 
 

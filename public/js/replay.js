@@ -132,15 +132,14 @@ var replay = (function() {
 	};
 
 	var onNextMove = function(e) {
-		console.log(e);
 		nextMove();
 		return nobubble(e);
 	};
 
 	var onKeyup = function(e) {
 		switch(e.which) {
-			case 37: prevMove();
-			case 39: nextMove();
+			case 37: prevMove(); break;
+			case 39: nextMove(); break;
 		}
 		return nobubble(e);
 	};

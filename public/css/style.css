@@ -1,7 +1,7 @@
 /* css reset pnd element defaults */
 * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
 body, h1, h2, h3, div, td, input, option { font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; font-style: normal; font-variant: normal; }
-body {background-color:#daeae7; margin:0px; min-width:920px; min-height:500px; }
+body {margin:0px; min-width:920px; min-height:500px; /*background-image:url('/img/hoffman.png');*/ background-color:#daeae7; }
 hr	{ clear:both; margin-top:5px; margin-bottom:5px; width:100% }
 h1 { color:#606060; font-size: 20px; }
 h2 { color:#606060; font-size: 18px; }
@@ -287,6 +287,16 @@ article > .announcements {
 	font-size:18px;
 		
 }
+
+.both-message {
+	width:100%;
+	background-color:#daeae7;
+	color:#fff;
+	border:2px solid #333;
+	border-radius:10px;
+	font-size:18px;
+}
+
 
 .faded-logo {
 	opacity: 0.5;

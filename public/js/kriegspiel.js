@@ -199,12 +199,6 @@ var kriegspiel = (function() {
 		else deactivate();
 	};
 
-	var onGameover = function (data) {
-		announce(data);
-		if (data.action === 'start') activate();
-		else deactivate();
-	}
-
 	var onImpossible = function (data) {
 		announce(data);
 		if (data.action === 'start') {
@@ -224,10 +218,6 @@ var kriegspiel = (function() {
 			deactivate();
 		}
 	}
-	
-	var onEnd = function (data) {
-		announce(data);
-	}
 
 	var onInactive = function (data) {
 		announce(data);
@@ -237,6 +227,16 @@ var kriegspiel = (function() {
 	var onFinished = function (data) {
 		announce(data);
 		_board.position(_temp);
+	}
+
+	var onGameover = function (data) {
+		announce(data);
+		deactivate();
+	}
+
+	var onFinish = function (data) {
+		announce(data);
+		deactivate();
 	}
 
 	//Fired when player joins
@@ -427,6 +427,7 @@ var kriegspiel = (function() {
 	_socket.on('declinedraw', announce);	
 	_socket.on('inactive', onInactive);
 	_socket.on('finished', onFinished);
+	_socket.on('finish', onFinish);
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
 	_socket.on('gameover', onGameover);	
@@ -434,7 +435,6 @@ var kriegspiel = (function() {
 	_socket.on('capture', onCapture);
 	_socket.on('check', announce);
 	_socket.on('move', onMove);
-	_socket.on('end', onEnd);
 	
 	//-----------------------------------------
 	//Trigger event to join the game
@@ -454,8 +454,6 @@ var kriegspiel = (function() {
 	$("#resign").on("click",doResign);
 	$("#resignyes").on("click",doResignYes);
 	$("#resigncancel").on("click",doResignCancel);
-
-
 
 	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
 
