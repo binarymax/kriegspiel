@@ -317,6 +317,7 @@ var kriegspiel = (function() {
 
 	//Moves a piece on the server
 	var move = function(source, target, piece, newPos, oldPos, orientation) {
+		clearOccupies();
 		var castleType = checkCastle(source,target,piece);
 		if (castleType) newPos = castle(castleType,newPos);
 		_socket.emit('move',{gameid:_gameid,source:source,target:target,scratch:getscratch(newPos)});
@@ -348,7 +349,6 @@ var kriegspiel = (function() {
 		}
 	};
 
-	
 	var doPawncaptures = function(e){
 		if(_active && _movestate.okPawnCaptures()) {
 			_socket.emit('pawncaptures',{gameid:_gameid});
@@ -359,7 +359,8 @@ var kriegspiel = (function() {
 	};
 
 
-	var clearOccupies = function() {
+	var clearOccupies = function(show) {
+		if (show) showDialog("occupies"); else hideDialog("occupies");
 		for(var f=0;f<8;f++) { 
 			for(var r=0;r<8;r++) { 
 				$('.square-'+files[f]+ranks[r]).removeClass('highlight-square').removeClass('highlight-occupies');
@@ -369,7 +370,6 @@ var kriegspiel = (function() {
 
 	var doOccupiesSquare = function(e) {
 		clearOccupies();
-		hideDialog("occupies");
 		if(_active && _variant.occupies) {
 			var square = $(this).attr("data-square");
 			_movestate.doOccupies();
@@ -380,8 +380,7 @@ var kriegspiel = (function() {
 	}
 
 	var doOccupies = function(e){
-		clearOccupies();
-		showDialog("occupies");
+		clearOccupies(true);
 		if(_active && _variant.occupies && _movestate.okOccupies()) {
 			var f,r;
 			var position = _board.position();
@@ -407,7 +406,6 @@ var kriegspiel = (function() {
 	};
 
 	var doOccupiesCancel = function(e){
-		hideDialog("occupies");
 		clearOccupies();
 		return nobubble(e);
 	}
