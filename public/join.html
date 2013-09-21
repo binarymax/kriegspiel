@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-15T17:36:10+0100" >
+<meta name="date" content="2013-09-21T20:15:17+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -21,14 +21,19 @@
 	</header>
 	
 	<div class="alerts"></div>
+
+	<br>
 	
 	<section class="middle">
 
 			<article>
 				<div id="login" class="hidden">
 					<form method="POST" action="/join" id="loginform">
-					<h3>Login or Create an Account:</h3>
-					<div id="account" class="content left">
+					<h3>Login or Create an Account</h3>
+					<div class="action right">
+						<input type="submit" id="submit" name="submit" value="Login">
+					</div>
+					<div id="account" class="content">
 						<label><input type="text" name="username" id="username" /> username <span id="newusername"></span></label><br />
 						<label><input type="password" name="password1" id="password1" /> password</label><br />
 						<div id="newfields" class="hidden">				
@@ -37,9 +42,6 @@
 						</div>
 						<label id="newaccount"><input type="checkbox" name="newaccount"/> Create a new account?</label><br />
 						<br />
-					</div>
-					<div class="action right">
-						<input type="submit" id="submit" name="submit" value="Login">
 					</div>
 					</form>
 				</div>
@@ -50,31 +52,35 @@
 				</div>
 			</article>
 			
-			<hr>
-	
+			<br>
+
 			<article>
+				<h3>Join a game waiting for an opponent</h3>
 				<form method="POST" action="/join" id="joinform">
-					<h3>Join a game waiting for an opponent:</h3>
 					<ul id="inactive" class="content">
 					</ul>
 				</form>
 			</article>
 		
-			<hr>	
+			<br>	
 	
 			<article>
-				<h3>Games in progress:</h3>
+				<h3>Games in progress</h3>
 				<ul id="active" class="content">
 				</ul>
 			</article>
+
+			<br>
 		
 			<article>
-				<h3>Games completed:</h3>
+				<h3>Games completed</h3>
 				<ul id="finished" class="content">
 				</ul>
 			</article>
 
 	</section>
+
+	<br>
 	
 	<footer class="home">
 		<div class="content">
@@ -91,7 +97,7 @@
 	</script>	
 
 	<script type="text/template" data-template="finished">
-		<li class="finished parent" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <button class="review mouseover">Review!</button></li>	
+		<li class="finished parent" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <button class="review mouseover">Replay!</button></li>	
 	</script>	
 
 	<script type="text/javascript" src="http://staticmax.s3-website-us-east-1.amazonaws.com/krgspl/js/jquery-1.10.2.min.js"></script>

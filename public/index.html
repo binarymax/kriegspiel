@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-06T11:03:13+0100" >
+<meta name="date" content="2013-09-21T20:01:36+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -19,19 +19,37 @@
 		<h1>KR<span class="faded-logo">IE</span>GSP<span class="faded-logo">IE</span>L</h1>
 		<h2>The game of imperfect information</h2>
 	</header>
+
+	<br>
 	
 	<section class="middle">
-		<ul id="variants">
-			<li class="variant" data-for="classic"><a href="#classic"><h3>Classic Kriegspiel</h3></a></li>
-			<li class="variant" data-for="lovenheim"><a href="#lovenheim"><h3>Lovenheim Variant</h3></a></li>
-			<li class="variant" data-for="rochester"><a href="#rochester"><h3>Rochester Variant</h3></a></li>
-		</ul>
 		
-		<hr>		
+		<article id="introduction">
+
+			<h2>You can see your pieces, but not your opponents!</h2>
+			<ul id="variants">
+				<li class="variant" data-for="classic"><a href="#classic"><h3>Classic Kriegspiel</h3></a></li>
+				<li class="variant" data-for="lovenheim"><a href="#lovenheim"><h3>Lovenheim Variant</h3></a></li>
+				<li class="variant" data-for="rochester"><a href="#rochester"><h3>Rochester Variant</h3></a></li>
+			</ul>
+
+		</article>
+		
+		<br>		
 		
 		<article id="classic">
 			<a name="classic"></a>
-			<h4>Classic Kriegspiel:</h4>
+			<h3>Classic Kriegspiel</h3>
+			<div class="content">
+				<div class="tip">You move like chess</div>
+				<div class="tip">We give you some information</div>
+				<div class="tip">Move gracefully, get lucky</div>
+				<div class="tip">Ask if there are pawn captures</div>
+				<div class="tip">Know from where a check originates</div>
+				<div class="tip">We tell you when you capture a piece</div>
+			</div>
+
+			<!--
 			<p class="content">
 				Kriegspiel (German for "War Game") is a chess variant of imperfect information.  The premise is that, like war, you can see your own position, but not that of your opponent.  You follow the rules of normal chess, and some information is given to you, but otherwise you must deduce where your opponents pieces are in order to win.  All information that is shared by the game is shared to both black and white.  There are many variations of Kriegspeil, and each variation reveals different information.  The more information you have, either directly or though deduction, the easier it is to win!
 			</p>
@@ -44,6 +62,10 @@
 			<p class="content">
 				Listed below are all the possible announcements that can be shared with both players.  				
 			</p>
+			-->
+			<div class="action bottomright">
+				<a href="/join?type=classic">Play Now!</a>
+			</div>
 
 			<div class="announcements">
 				<h4>Possible Announcements:</h4>
@@ -65,31 +87,25 @@
 					<li>[color] has promoted</li>
 				</ul>
 			</div>
-			<div class="action bottomright">
-				<a href="/join?type=classic">Play Now!</a>
-			</div>
 
 		</article>
 	
-		<hr>	
+		<br>	
 	
 		<article id="lovenheim">
 			<a name="lovenheim"></a>
-			<h4>Lovenheim variant:</h4>
-			<p class="content">
-				The Lovenheim variant was created by two Lovenheim cousins.  More intelligence can be gathered, and some is taken away.  The rules are the same as classic kriegspiel with the following exceptions: 
-			</p>
-			<p class="content">
-				a) The origin of a check is not announced, only that a player is in check.<br />
-				b) It is not announced whether a piece or pawn has been captured, only that a capture is made and on the square.<br />				
-				c) When an illegal move is attempted, the attempted square is announced (but not the piece or the origin).<br />
-				d) During the 'any pawn captures', if there is a valid capture and the player attempts an illegal capture - that attempted capture square is announced.<br />
-				e) A player may ask if a square is occupied within a king's moving distance of any of their pieces to be announced.  The game announces 'occupied' or 'not occupied' of the square requested.  For example, if you have a pawn on e4, you may request 'occupied?' on the following squares: e5,f5,f4,f3,e3,c3,c4,c5.  The same applies for any other of your pieces.  A player may only do this once per turn, before any other requests are made.				
-				
-			</p>
-			<p class="content">
-				Listed below are all the possible announcements that can be shared with both players.  				
-			</p>
+			<h3>Lovenheim variant</h3>
+			<div class="content">
+				<div class="tip">You move like chess</div>
+				<div class="tip">We give you some information</div>
+				<div class="tip">Reveal an adjacent square!</div>
+				<div class="tip">Ask if there are pawn captures</div>
+				<div class="tip">Know about your opponents promotions</div>
+				<div class="tip">We tell you when you capture a piece</div>
+			</div>
+			<div class="action bottomright">
+				<a href="/join?type=lovenheim">Play Now!</a>
+			</div>
 			
 			<div class="announcements">
 				<h4>Possible Announcements:</h4>
@@ -106,29 +122,28 @@
 					<li>[square] is not occupied</li>
 					<li>[color] has available pawn captures and must attempt one</li>
 					<li>[color] has no available pawn captures</li>
+					<li>[color] has promoted to a [piece]</li>
 				</ul>
-			</div>
-			<div class="action bottomright">
-				<a href="/join?type=lovenheim">Play Now!</a>
 			</div>
 
 		</article>
 	
-		<hr>	
+		<br>	
 	
 		<article id="rochester">
 			<a name="rochester"></a>
-			<h4>Rochester variant:</h4>
-			<p class="content">
-				The Rochester variant was what we used to play at the Rochester Chess Center when we were younger (and both lived in Rochester). The rules are the same as classic kriegspiel with the following exceptions: 
-			</p>
-			<p class="content">
-				a) The origin of a check is not announced, only that a player is in check.<br />
-				b) When a piece is captured, the actual piece name is announced.
-			</p>
-			<p class="content">
-				Listed below are all the possible announcements that can be shared with both players.  				
-			</p>
+			<h3>Rochester variant</h3>
+			<div class="content">
+				<div class="tip">You move like chess</div>
+				<div class="tip">We give you some information</div>
+				<div class="tip">Ask if there are pawn captures</div>
+				<div class="tip">Just like they play in Rochester, NY</div>
+				<div class="tip">Know about your opponents promotions</div>
+				<div class="tip">Know what kind of piece you capture</div>
+			</div>
+			<div class="action bottomright">
+				<a href="/join?type=rochester">Play Now!</a>
+			</div>
 			
 			<div class="announcements">
 				<h4>Possible Announcements:</h4>
@@ -145,14 +160,13 @@
 					<li>[color] has no available pawn captures</li>
 				</ul>
 			</div>
-			<div class="action bottomright">
-				<a href="/join?type=rochester">Play Now!</a>
-			</div>
 
 		</article>
 
 
 	</section>
+	
+	<br>	
 	
 	<footer class="home">
 		<div class="content">

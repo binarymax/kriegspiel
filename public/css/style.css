@@ -1,7 +1,7 @@
 /* css reset pnd element defaults */
 * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
 body, h1, h2, h3, div, td, input, option { font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; font-style: normal; font-variant: normal; }
-body {margin:0px; min-width:920px; min-height:500px; /*background-image:url('/img/hoffman.png');*/ background-color:#daeae7; }
+body {margin:0px; min-width:920px; min-height:500px; background-color: transparent; background-image: url('http://static.krgspl.com/krgspl/img/spiel2.png'); }
 hr	{ clear:both; margin-top:5px; margin-bottom:5px; width:100% }
 h1 { color:#606060; font-size: 20px; }
 h2 { color:#606060; font-size: 18px; }
@@ -27,6 +27,14 @@ footer {
 
 }
 
+article {
+	color:#000505; 
+	text-shadow: #ffffff 0px 0px 2px; 
+	background-color:rgba(255,255,255,0.44); 
+	border:1px solid rgba(255,255,255,0.505);
+	padding:12px;
+}
+
 .home > h1 {
 	text-align: center;
 	font-size:72px;
@@ -38,6 +46,10 @@ footer {
 	font-size:28px;
 }
 
+.home > h3 {
+	text-align: center;
+	font-size:18px;
+}
 
 .game > h1 {
 	text-align:center;
@@ -58,8 +70,42 @@ article {
 	clear:both;
 }
 
+article > h2 {
+	text-align:center;
+	font-size:20px;
+	font-weight:bold;
+	margin:5px;
+}
+
+article > h3 {
+	text-align:center;
+	font-size:20px;
+	font-weight:bold;
+	margin:5px;
+}
+
+article h4 {
+	font-size:18px;
+	font-weight:normal;
+	padding-left:15px;
+	margin:5px;
+}
+
 article .content {
 	margin-left:20px;
+}
+
+.tip {
+	display:inline-block;
+	width:48%;
+	margin-top:8px;
+	margin-bottom:8px;
+	text-align:center;
+	border:1px solid #daeae7;
+	background-color:rgba(255,255,255,0.8);
+	padding:5px;
+	border-radius:6px;
+
 }
 
 header.home {
@@ -99,7 +145,7 @@ footer.home > .content {
 
 .variant {
 	display: inline-block;
-	margin:20px;
+	margin:16px;
 	font-size:18px;
 	border:1px solid #ccc;
 	border-radius:10px;
@@ -114,13 +160,12 @@ footer.home > .content {
 }
 
 article > .announcements {
-	float:left;
 	margin-bottom:20px;
 }
 
 .bottomright {
 	float:right;
-	margin-top:100px;
+	margin-top: 25px;
 	margin-right:30px;
 }
 
@@ -162,6 +207,14 @@ article > .announcements {
 	background: linear-gradient(to bottom,  rgba(180,227,145,1) 0%,rgba(97,196,25,1) 50%,rgba(180,227,145,1) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
 	text-decoration: none;
+}
+
+#loginform > h3 {
+	text-align:center;
+	font-size:20px;
+	font-weight:bold;
+	margin:5px;
+	margin-bottom:20px;
 }
 
 .action > *:active {
