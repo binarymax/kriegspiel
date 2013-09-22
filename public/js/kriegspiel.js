@@ -103,7 +103,10 @@ var kriegspiel = (function() {
 			}
 		}
 		if (data.type==="welcome" && data.username) {
+			var startdate = (new Date(Date.parse(data.startdate)));
+			var started = startdate.toLocaleDateString() + ' ' + startdate.toLocaleTimeString();
 			$("#player"+data.who).text(data.username);
+			$("#startdate").text(started);
 		}
 		if(!noscroll) setTimeout(function(){
 			//Scroll to the bottom
@@ -153,9 +156,10 @@ var kriegspiel = (function() {
 	}
 
 	var resetOptions = function() {
-		_movestate.okPawnCaptures()?enableOption("pawncaptures"):disableOption("pawncaptures");
+		_movestate.okPawnCaptures()&&_active?enableOption("pawncaptures"):disableOption("pawncaptures");
+		_movestate.okOccupies()&&_active?enableOption("occupies"):disableOption("occupies");		
 		_movestate.okDrawOffer()?enableOption("offerdraw"):disableOption("offerdraw");
-		_movestate.okOccupies()?enableOption("occupies"):disableOption("occupies");		
+		enableOption("resign");
 	}
 
 	//Returns a scratch FEN string of only the opponents pieces

@@ -53,6 +53,10 @@ var okId = function(id) {
 	return reId.test(id);
 }
 
+var badId = function(res) {
+	res.redirect('/join?error=badid');
+}
+
 var newGame = function(req,res) {
   var gameid = Math.floor(Math.random()*100000).toString(16);
   res.redirect('/games/'+gameid);
@@ -145,7 +149,7 @@ app.get('/games/:gameid',security.authenticateUser,function(req,res){
 			}
 		});
 	} else {
-		badId();
+		badId(res);
 	}
 });
 
@@ -157,7 +161,7 @@ app.get('/data/:gameid',security.authenticateUser,function(req,res){
 			res.send(game.serialize());
 		});
 	} else {
-		badId();
+		badId(res);
 	}
 });
 

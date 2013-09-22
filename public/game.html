@@ -3,7 +3,7 @@
 <head>
 <title>...KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-22T10:09:29+0100" >
+<meta name="date" content="2013-09-22T17:20:58+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -18,7 +18,11 @@
 <body>
 
 	<header class="game">
-		<h2><span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span></h2>
+		<h1><span class="faded-logo">PLAY</span></h1>
+		<h2>
+			<span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span><br>
+			<span class="faded-logo">started</span> <span id="startdate">?</span>
+		</h2>		
 	</header>
 	
 	<section id="game">
@@ -29,10 +33,10 @@
 	
 	<footer>
 		<div id="options">
-			<button id="pawncaptures" class="option">Check for Pawn Captures</button>
-			<button id="occupies" class="option">Reveal Square</button>
-			<button id="offerdraw" class="option">Offer Draw</button>
-			<button id="resign" class="option">Resign</button>
+			<button id="pawncaptures" class="option disabled" disabled="disabled">Check for Pawn Captures</button>
+			<button id="occupies" class="option disabled" disabled="disabled">Reveal Square</button>
+			<button id="offerdraw" class="option disabled" disabled="disabled">Offer Draw</button>
+			<button id="resign" class="option disabled" disabled="disabled">Resign</button>
 		</div>
 		
 		<div id="pawncapturesdialog" class="dialog">

@@ -3,7 +3,7 @@
 <head>
 <title>...KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-21T09:16:59+0100" >
+<meta name="date" content="2013-09-22T17:04:48+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -17,11 +17,15 @@
 </head>
 <body>
 
-	<header class="game">
-		<h2><span class="faded-logo">Replay</span> <span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span> <span class="faded-logo">played on</span> <span id="gamedates">?</span> </h2>
+	<header class="replay">
+		<h1><span class="faded-logo">REPLAY</span></h1>
+		<h2>
+			<span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span><br>
+			<span id="startdate">?</span> <span class="faded-logo">to</span> <span id="enddate">?</span>
+		</h2>
 	</header>
 	
-	<section id="game">
+	<section id="replay">
 		<div id="wait"><h2>The game is loading...</h2></div>
 		<div id="board"></div>
 		<div id="console"><ul></ul></div>
@@ -29,8 +33,10 @@
 	
 	<footer>
 		<div id="options">
-			<button id="prevmove" class="option disabled" disabled="disabled">&lt;== Prev Move</button>
-			<button id="nextmove" class="option disabled" disabled="disabled">Next Move ==&gt;</button>
+			<button id="firstmove" class="option disabled" disabled="disabled">&lt;&lt; First Move</button>
+			<button id="prevmove" class="option disabled" disabled="disabled">&lt; Prev Move</button>
+			<button id="nextmove" class="option disabled" disabled="disabled">Next Move &gt;</button>
+			<button id="lastmove" class="option disabled" disabled="disabled">Last Move &gt;&gt;</button>
 		</div>
 	</footer>
 	

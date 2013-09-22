@@ -10,9 +10,6 @@ h4 { color:#606060; font-size: 14px; }
 ul { list-style-type:none; padding:0; margin-left:0; }
 ol { list-style-type:decimal; padding:0; margin-left:0; }
 li { font-size:12px; }
-a  { color:#7289A9; }
-a:hover { color:#F90; }
-a:visited { color:#606060; }
 img{ border:0px; }
 
 header {
@@ -50,21 +47,6 @@ article {
 	text-align: center;
 	font-size:18px;
 }
-
-.game > h1 {
-	text-align:center;
-	font-size:28px;
-	font-weight:bold;
-	margin:5px;
-}
-
-.game > h2 {
-	text-align:center;
-	font-size:28px;
-	font-weight:bold;
-	margin:5px;
-}
-
 
 article {
 	clear:both;
@@ -114,9 +96,12 @@ header.home {
 	border-bottom:2px solid #333; 
 }
 
-header.game {
+header.game,
+header.replay {
 	width:100%;
 	padding:5px;
+	background-color: #fff;
+	border-bottom:2px solid #333; 
 }
 
 footer.home {
@@ -163,7 +148,7 @@ article > .announcements {
 	margin-bottom:20px;
 }
 
-article > hr {
+article hr {
 	border-top:1px solid #ccc;
 	border-bottom:1px solid #fff;
 	width:535px;
@@ -223,6 +208,39 @@ article > hr {
 	margin-bottom:20px;
 }
 
+#session > h3 {
+	text-align:center;
+	font-size:20px;
+	font-weight:bold;
+	margin:5px;
+}
+
+#startform {
+	text-align:center;
+	font-size:18px;
+	margin:5px;
+}
+
+#startform > input {
+	margin-top:10px;
+	width:150px;
+}
+
+.selection {
+	display:inline-block;
+ 	text-align:center;
+	border:1px solid #daeae7;
+	background-color:rgba(255,255,255,0.8);
+	padding:10px;
+	padding-right:15px;
+	border-radius:6px;
+	margin:5px;
+}
+
+.selection > input {
+	margin-right:10px;
+}
+
 .action > *:active {
 	border-top:2px solid #777;
 	border-left:2px solid #777;
@@ -233,7 +251,7 @@ article > hr {
 	text-decoration: none;
 }
 
-.starting,.waiting,.happening {
+.starting,.waiting,.happening,.finished {
 	font-size:18px;
 	padding-top:5px;
 	padding:14px;
@@ -242,8 +260,8 @@ article > hr {
 	background-color:#fff;
 }
 
-.join {
-	float:right;
+.join , .join:visited,
+.start, .start:visited  {
 	margin:0px;
 	padding-top:4px;
 	padding-bottom:4px;
@@ -257,6 +275,7 @@ article > hr {
 	border-radius:10px;
 	color: #fff;
 	text-shadow: #333333 1px 1px 2px;
+	text-decoration: none;
 	background: rgb(180,227,145); /* Old browsers */
 	background: -moz-linear-gradient(top,  rgba(180,227,145,1) 0%, rgba(97,196,25,1) 50%, rgba(180,227,145,1) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(180,227,145,1)), color-stop(50%,rgba(97,196,25,1)), color-stop(100%,rgba(180,227,145,1))); /* Chrome,Safari4+ */
@@ -267,7 +286,8 @@ article > hr {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */	
 }
 
-.join:active {
+.join:active,
+.start:active {
 	border-top:1px solid #777;
 	border-left:1px solid #777;
 	border-bottom:1px solid #ccc;
@@ -358,7 +378,7 @@ article > hr {
 
 
 .faded-logo {
-	opacity: 0.5;
+	color:#CCC;
 }
 
 .faded-piece {
@@ -434,7 +454,6 @@ article > hr {
 	font-weight:bold;
 	color: #333;
 	background-color:#fff;
-	/*text-shadow: #fff 1px 1px 1px;*/
 	text-decoration: none;
 	margin-top:10px;
 }
@@ -443,8 +462,6 @@ article > hr {
 	width:100px;
 }
 
-.modal {
-}
 
 .banner {
 	position:absolute;
@@ -461,3 +478,23 @@ article > hr {
 
 .banner.error   { background-color: #E30804; color: #fff; }
 .banner.success { background-color: #67B11B; color: #fff; }
+
+#replay > #board {
+	padding-top:80px;
+}
+
+header.game > h1, 
+header.replay > h1 {
+	display:inline-block;
+	font-size:54px;
+	font-weight:bold;
+	margin:0px;
+	margin-left:12px;
+	margin-right:20px;
+}
+header.game > h2, 
+header.replay > h2 {
+	display:inline-block;
+	font-size:20px;
+	font-weight:bold;
+}

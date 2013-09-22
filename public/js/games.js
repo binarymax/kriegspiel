@@ -13,7 +13,8 @@
 		"createdlogin": "Thanks for joining!  Get ready for some Kriegspiel",
 		"badlogin": "Sorry, incorrect username or password",
 		"missinglogin": "Please provide both username and password",
-		"login": "Sorry, you need to login before you can do that"
+		"login": "Sorry, you need to login before you can do that",
+		"badid": "Sorry, the gameid was invalid"
 	}
 
 	//Shows a success banner 
@@ -46,6 +47,15 @@
 			$target.append(html);
 		};
 		return $target;
+	}
+
+	//-----------------------------------------
+	//Client events	
+	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
+	
+	var doStartDialog = function(e) {
+		$("#startmodal").show();
+		return nobubble(e);
 	}
 	
 	//Checks if a username exists in the database
@@ -119,6 +129,11 @@
 			}
 		}
 	});	
+
+	$("#startgame").on("click",doStartDialog);
+
+	//-----------------------------------------
+	// AJAXY stuff
 	
 	//Checks for an existing session, and toggles the login box/session info respectively
 	$.get("/session",function(data,status){

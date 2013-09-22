@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-21T20:15:17+0100" >
+<meta name="date" content="2013-09-22T16:56:03+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -46,25 +46,33 @@
 					</form>
 				</div>
 				<div id="session" class="hidden">
-					<div class="left"><h3>Welcome, <span id="sessionusername"></span>!</h3></div>
-					<div class="right" style="margin-top:20px;margin-right:0px;"><a href="/logout">logout</a></div>
-					<div class="clear content" style="margin-bottom:10px;"><div class="starting parent">Start a new game of Kriegspiel! <label>(<input type="radio" name="startcolor" value="white" checked="checked" />as white)</label> <label>(<input type="radio" name="startcolor" value="black" />as black)</label><a href="/start" class="join mouseover">Start!</a></div></div>
+					<!-- <div class="right" style="margin-top:5px; margin-right:0px;"><a href="/logout">logout</a></div> -->
+					<h3>Welcome, <span id="sessionusername"></span>!</h3>
+					
 				</div>
 			</article>
 			
 			<br>
 
-			<article>
-				<h3>Join a game waiting for an opponent</h3>
-				<form method="POST" action="/join" id="joinform">
-					<ul id="inactive" class="content">
-					</ul>
+			<article id="startgroup">
+				<h3>Start a New Game</h3>
+				<form id="startform">
+					<label class="selection"><input type="radio" name="variant" value="classic" checked="checked" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br>
+					<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />as white</label> <label class="selection"><input type="radio" name="startcolor" value="black" />as black</label><br>
+					<input type="submit" name="submit" value="Start!" class="join">
 				</form>
+			</article>
+
+			<br>
+
+			<article id="inactivegroup">
+				<h3>Join a game waiting for an opponent</h3>
+				<ul id="inactive" class="content"></ul>
 			</article>
 		
 			<br>	
 	
-			<article>
+			<article id="activegroup">
 				<h3>Games in progress</h3>
 				<ul id="active" class="content">
 				</ul>
@@ -72,10 +80,9 @@
 
 			<br>
 		
-			<article>
+			<article id="finishedgroup">
 				<h3>Games completed</h3>
-				<ul id="finished" class="content">
-				</ul>
+				<ul id="finished" class="content"></ul>
 			</article>
 
 	</section>
@@ -89,7 +96,7 @@
 	</footer>	
 	
 	<script type="text/template" data-template="inactive">
-		<li class="waiting parent" data-gameid="{{gameid}}">{{white}}(white) is waiting for an opponent(black) <button class="join mouseover">Join!</button></li>	
+		<li class="waiting" data-gameid="{{gameid}}">{{white}}(white) is waiting for an opponent(black) <a href="/games/{{gameid}}" class="right join">Join!</a></li>	
 	</script>	
 	
 	<script type="text/template" data-template="active">
@@ -97,8 +104,8 @@
 	</script>	
 
 	<script type="text/template" data-template="finished">
-		<li class="finished parent" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <button class="review mouseover">Replay!</button></li>	
-	</script>	
+		<li class="finished" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <a href="/games/{{gameid}}?replay" class="right join">Replay!</a></li>	
+	</script>
 
 	<script type="text/javascript" src="http://staticmax.s3-website-us-east-1.amazonaws.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/js/games.js"></script> 	

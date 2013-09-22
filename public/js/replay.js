@@ -100,6 +100,15 @@ var replay = (function() {
 
 		$("#wait").remove();
 		$("#board").show();
+		$("#playerwhite").text(_game.whiteusername);
+		$("#playerblack").text(_game.blackusername);
+		var startdate = (new Date(Date.parse(_game.startdate)));
+		var started = startdate.toLocaleDateString() + ' ' + startdate.toLocaleTimeString();
+		var enddate = (new Date(Date.parse(_game.enddate)));
+		var ended   = enddate.toLocaleDateString() + ' ' + enddate.toLocaleTimeString();
+		$("#startdate").text(started);
+		$("#enddate").text(ended);
+
 
 		if(!_board) {
 			_board = new ChessBoard('board', {
@@ -114,7 +123,7 @@ var replay = (function() {
 				
 		disableOption("prevmove");
 		enableOption("nextmove");
-		
+				
 	};
 
 	//Fired when game has an error
