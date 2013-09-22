@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-22T16:56:03+0100" >
+<meta name="date" content="2013-09-22T21:00:08+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -95,20 +95,29 @@
 		</div>
 	</footer>	
 	
-	<script type="text/template" data-template="inactive">
+	<script type="text/template" data-type="template" data-template="inactive">
 		<li class="waiting" data-gameid="{{gameid}}">{{white}}(white) is waiting for an opponent(black) <a href="/games/{{gameid}}" class="right join">Join!</a></li>	
 	</script>	
 	
-	<script type="text/template" data-template="active">
+	<script type="text/template" data-type="template" data-template="active">
 		<li class="happening">{{white}}(white) is on move {{moves}} vs {{black}}(black)</li>	
 	</script>	
 
-	<script type="text/template" data-template="finished">
+	<script type="text/template" data-type="template" data-template="finished">
 		<li class="finished" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <a href="/games/{{gameid}}?replay" class="right join">Replay!</a></li>	
 	</script>
 
 	<script type="text/javascript" src="http://staticmax.s3-website-us-east-1.amazonaws.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/js/games.js"></script> 	
+	
+	<script type="text/javascript" >
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-22107593-9', 'krgspl.com');
+	  ga('send', 'pageview');
+	</script>	
 	
 </body>
 </html>

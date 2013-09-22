@@ -66,37 +66,29 @@ var joinGame = function(req,res,gameid) {
   res.redirect('/games/'+gameid);
 };
 
+//Shortcut file sender
+var file = function(filename) { return function(req,res){ res.sendfile(filename); }};
+
 //-------------------------------------------
 //Routes
-app.get('/', function(req,res){
-  res.sendfile('public/index.html');
-});
+app.get('/', file('public/index.html'));
 
-app.get('/join/?', function(req,res){
-  res.sendfile('public/join.html');
-});
+app.get('/robots.txt', file('public/robots.txt'));
 
+app.get('/google70e3e038531249c6.html', file('public/google70e3e038531249c6.html'));
+
+app.get('/join/?', file('public/join.html'));
+
+//Logs in or creates a new user
 app.post('/join/?', function(req,res) {
-	
-	if(req.session && req.session.username) {
-		//Has a username
-		var joingameid=req.body.joingameid;
-		var startgame=req.body.startgame;
-		if (startgame && startgame.length) {
-			newGame(req,res);
-		} else if (joingameid && joingameid.length) {
-			joinGame(req,res,joingameid);
-		} else {
-			res.redirect('/join/');
-		}
-	} else {
+	if(!req.session || !req.session.username) { 
 		//No session or username
 		security.loginOrCreateUser(req,res);
 	}
 });
 
-
-app.get('/games/?',function(req,res){
+//Gets a list of games
+app.get('/games/?',function(req,res) {
 	var state = spiel.state(req.query.state||'active');
 	db.findGamesByFilter(
 		{state:state},
@@ -119,12 +111,14 @@ app.get('/games/?',function(req,res){
 	);
 });
 
+//Checks the database for an existing username
 app.get('/usernames/:username',function(req,res){
 	security.existingUser(req.params.username,function(isExists){
 		res.send(200,isExists);
 	});
 });
 
+//Gets the user's session data
 app.get('/session',function(req,res){
 	if(req.session && req.session.username) {
 		var data = {};
@@ -135,9 +129,10 @@ app.get('/session',function(req,res){
 	}
 });
 
-//Authenticated Routes
+//Starts up a new game
 app.get('/start/?', security.authenticateUser, newGame);
 
+//Gets a game html file
 app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
 	if(okId(gameid)) {
@@ -153,7 +148,7 @@ app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	}
 });
 
-
+//Gets game data for a finished game
 app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
 	if(okId(gameid)) {

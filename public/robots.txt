@@ -1,0 +1,17 @@
+User-agent: *
+Disallow: /privacy/
+Disallow: /privacy
+Disallow: /games/
+Disallow: /games
+Disallow: /data/
+Disallow: /data
+Disallow: /usernames/
+Disallow: /usernames
+Disallow: /session/
+Disallow: /session
+Disallow: /start/
+Disallow: /start
+Disallow: /join/
+Disallow: /join
+Disallow: /logout/
+Disallow: /logout
