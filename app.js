@@ -216,7 +216,7 @@ io.sockets.on('connection', function (socket) {
 				});
 				
 				socket.on('move', function (data) {
-					spiel.move(data.gameid, data.source, data.target, data.scratch, {session:session, socket:socket});		
+					spiel.move(data.gameid, data.source, data.target, data.scratch, data.promotion, {session:session, socket:socket});		
 				});
 				
 				socket.on('pawncaptures', function (data) {

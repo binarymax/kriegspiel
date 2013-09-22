@@ -3,7 +3,7 @@
 <head>
 <title>...KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-22T17:20:58+0100" >
+<meta name="date" content="2013-09-22T18:31:32+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, variant, game">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -22,7 +22,7 @@
 		<h2>
 			<span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span><br>
 			<span class="faded-logo">started</span> <span id="startdate">?</span>
-		</h2>		
+		</h2>
 	</header>
 	
 	<section id="game">
@@ -56,6 +56,11 @@
 		<div id="resigndialog" class="dialog">
 			Are you sure you want to resign?<br>
 			<button id="resigncancel" class="option">Cancel</button><button id="resignyes" class="option">Yes!</button>
+		</div>
+
+		<div id="promotedialog" class="dialog">
+			To which piece would you like to promote?<br>
+			<button id="promotequeen" data-piece="q" class="option promotebutton">Queen</button><button id="promoterook" data-piece="r" class="option promotebutton">Rook</button><button id="promotebishop" data-piece="b" class="option promotebutton">Bishop</button><button id="promoteknight" data-piece="n" class="option promotebutton">Knight</button>
 		</div>
 
 	</footer>

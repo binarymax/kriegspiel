@@ -23,7 +23,9 @@ var kriegspiel = (function() {
 	var _p,_o;  //First chars of your color and opponents color
 	var _temp;  //Temporary position to reset illegal moves
 
-	var _templates = {}; //UI Templates for Announcements
+	var _promotion = null; //Promotion data
+	
+	var _templates = {};   //UI Templates for Announcements
 
 	//Finite State Machine for the options available to the user on the move
 	var _movestate = (function(){
@@ -312,15 +314,15 @@ var kriegspiel = (function() {
 	//Client events	
 	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
 
+	//Castles a rook
 	var castle = function(castleType,newPos) {
 		if (newPos[castleType.source] === castleType.piece) {
-			console.log(newPos);
 			newPos = _board.move(castleType.source + '-' + castleType.target);
-			console.log(newPos);
 		}
 		return newPos;
 	};
 
+	//Check to see if move is a castle
 	var checkCastle = function(source,target,piece) {
 		if(piece.charAt(1).toLowerCase()!=='k') return false;
 		if(_color==='white' && source==='e1') {
@@ -332,18 +334,50 @@ var kriegspiel = (function() {
 		}
 		return false;
 	};
+	
+	//Promotes a piece
+	var promote = function(piece) {
+		_promotion.newPos[_promotion.target] = _p + piece.toUpperCase();
+		_board.position(_promotion.newPos);
+		move(_promotion.source, _promotion.target, _promotion.piece, _promotion.newPos, _promotion.oldPos, _promotion.orientation, piece);
+		_promotion = null;
+	};
+
+	//Check to see if move is a promotion
+	var checkPromotion = function(source,target,piece) {
+		_promotion = null;
+		if(piece.charAt(1).toLowerCase()!=='p') return false;
+		var sr = parseInt(source.charAt(1)), sf = getFile(source.charAt(0));
+		var tr = parseInt(target.charAt(1)), tf = getFile(target.charAt(0));
+		if(_color==='white' && tr===8) {
+			if(sr!==7 || Math.abs(sf-tf)>1) return 'impossible';
+			showDialog("promote");
+			$("#promotiondialog").attr("data-target",target);
+			return true;
+		} else if(target.charAt(1)==='1') {
+			if(sr!==2 || Math.abs(sf-tf)>1) return 'impossible';
+			showDialog("promote");
+			$("#promotiondialog").attr("data-target",target);
+			return true;
+		}
+		return false;
+	};
+
 
 	//Moves a piece on the server
-	var move = function(source, target, piece, newPos, oldPos, orientation) {
+	var move = function(source, target, piece, newPos, oldPos, orientation, promotion) {
 		clearOccupies();
 		var castleType = checkCastle(source,target,piece);
 		if (castleType) newPos = castle(castleType,newPos);
-		_socket.emit('move',{gameid:_gameid,source:source,target:target,scratch:getscratch(newPos)});
+		var movedata = {gameid:_gameid,source:source,target:target,scratch:getscratch(newPos)};
+		if (promotion) movedata.promotion = promotion;
+		_socket.emit('move',movedata);
 		deactivate();
 	};
 
 	//Piece was dropped on the chessboard
 	var drop = function(source, target, piece, newPos, oldPos, orientation) {
+		var promotion = null;
 		var color = piece.charAt(0);
 		if (color!==_color.charAt(0)) {
 			//Player is just messing around with opposing pieces
@@ -360,12 +394,17 @@ var kriegspiel = (function() {
 		} else if (source === target) {
 			//Not a move
 			return 'snapback';			
+		} else if (promotion = checkPromotion(source,target,piece)) {
+			if(promotion === 'impossible') return 'snapback'; //naughty!
+			//Promotion OK! Cache the drop event:
+			_promotion = {source:source, target:target, piece:piece, newPos:newPos, oldPos:oldPos, orientation:orientation};
 		} else {
 			//Attempt a move
 			_temp = oldPos;
 			move(source, target, piece, newPos, oldPos, orientation);
 		}
 	};
+
 
 	var doPawncaptures = function(e){
 		if(_active && _movestate.okPawnCaptures()) {
@@ -375,7 +414,6 @@ var kriegspiel = (function() {
 		}	
 		return nobubble(e);
 	};
-
 
 	var clearOccupies = function(show) {
 		if (show) showDialog("occupies"); else hideDialog("occupies");
@@ -388,7 +426,7 @@ var kriegspiel = (function() {
 
 	var doOccupiesSquare = function(e) {
 		clearOccupies();
-		if(_active && _variant.occupies) {
+		if(_active && _variant.occupies && _movestate.okOccupies()) {
 			var square = $(this).attr("data-square");
 			_movestate.doOccupies();
 			_socket.emit('occupies',{gameid:_gameid,target:square});
@@ -427,9 +465,16 @@ var kriegspiel = (function() {
 		clearOccupies();
 		return nobubble(e);
 	}
+	
+	var doPromotion = function(e){
+		if(_active && _promotion) promote($(this).attr("data-piece"));
+		hideDialog("promote")
+		return nobubble(e);
+	};
 
 	var doOfferdraw = function(e){
 		if(_movestate.okDrawOffer()) {
+			_movestate.doDrawOffer();
 			showDialog("offerdraw");
 		} else {
 			disableOption('offerdraw');
@@ -439,10 +484,12 @@ var kriegspiel = (function() {
 	};
 
 	var doOfferdrawYes = function(e){
+		if(_movestate.isDrawOffer()) {
+			_movestate.doDrawOffer();
+			_socket.emit('offerdraw',{gameid:_gameid});
+			disableOption('offerdraw')
+		}
 		hideDialog("offerdraw");
-		disableOption('offerdraw')
-		_movestate.doDrawOffer();
-		_socket.emit('offerdraw',{gameid:_gameid});
 		return nobubble(e);
 	};
 
@@ -469,18 +516,18 @@ var kriegspiel = (function() {
 	};
 
 	var doAcceptDraw = function(e){
-		_socket.emit('acceptdraw',{gameid:_gameid});
 		var message = $(this).parent();
 		message.find(".messagebutton").remove();
 		message.append("<span><em>(Draw Accepted!)</em></span>");
+		_socket.emit('acceptdraw',{gameid:_gameid});
 		return nobubble(e);
 	};
 
 	var doDeclineDraw = function(e){
-		_socket.emit('declinedraw',{gameid:_gameid});
 		var message = $(this).parent();
 		message.find(".messagebutton").remove();
 		message.append("<span><em>(Draw Declined!)</em></span>");
+		_socket.emit('declinedraw',{gameid:_gameid});
 		return nobubble(e);
 	};
 
@@ -489,37 +536,35 @@ var kriegspiel = (function() {
 		return nobubble(e);
 	};
 
-
 	//-----------------------------------------
 	//Load the templates	
 	$("script[data-type=template]").each(function(){
 		_templates[$(this).attr("data-template")] = $(this).html();
 	});
+
 	//-----------------------------------------
-	//Bind events	
+	//Bind Socket Response Events	
 	_socket.on('welcome', announce);
-	_socket.on('pawncaptures', announce);
+	_socket.on('promoted', announce);
 	_socket.on('occupies', announce);
 	_socket.on('offerdraw', announce);	
 	_socket.on('acceptdraw', announce);	
 	_socket.on('declinedraw', announce);	
-	_socket.on('inactive', onInactive);
-	_socket.on('finished', onFinished);
-	_socket.on('finish', onFinish);
+	_socket.on('pawncaptures', announce);
+
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
+	_socket.on('inactive', onInactive);
+	_socket.on('finished', onFinished);
 	_socket.on('gameover', onGameover);	
 	_socket.on('illegal', onIllegal);
 	_socket.on('capture', onCapture);
+	_socket.on('finish', onFinish);
 	_socket.on('check', announce);
 	_socket.on('move', onMove);
-	
+		
 	//-----------------------------------------
-	//Trigger event to join the game
-	_socket.emit('join',{gameid:_gameid});
-	
-	//-----------------------------------------
-	//Trigger events from buttons
+	//Wireup events for buttons and ui
 	$("#pawncaptures").on("click",doPawncaptures);
 
 	$("#occupies").on("click",doOccupies);
@@ -537,6 +582,13 @@ var kriegspiel = (function() {
 	$("#console").on("click",".declinedraw",doDeclineDraw);
 	$("#console").on("click",".replay",doReplay);
 
+	$(".promotebutton").on("click",doPromotion);
+
 	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
+
+	//-----------------------------------------
+	//Trigger Socket Request Event to join the game
+	_socket.emit('join',{gameid:_gameid});
+
 
 })();
