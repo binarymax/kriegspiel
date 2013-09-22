@@ -76,9 +76,10 @@ var kriegspiel = (function() {
 	}
 
 	//Renders data to a preloaded template 
-	var render = function(data) {
-		var regexp;
-		var message = _templates[data.type]||_templates["default"];
+	var render = function(data,template) {
+		template = template||data.type;
+		var regexp;		
+		var message  = _templates[template]||_templates["default"];
 		for(var key in data) {
 			if(data.hasOwnProperty(key) && typeof data[key] === "string") {
 				regexp = new RegExp("{{"+key+"}}","g");
@@ -95,7 +96,11 @@ var kriegspiel = (function() {
 		data.whoclass = data.who+"-message";
 		data.whatclass = data.who+"-"+data.type;
 		if (data.type!=="welcome" || $list.find("li."+data.whatclass).length===0) {
-			$list.append(render(data));
+			if(data.type==='offerdraw' && data.who===_color){
+				$list.append(render(data,'default'));
+			} else { 
+				$list.append(render(data));
+			}
 		}
 		if (data.type==="welcome" && data.username) {
 			$("#player"+data.who).text(data.username);
@@ -107,6 +112,11 @@ var kriegspiel = (function() {
 			$console.animate({scrollTop:top},500);
 		},100);
 	};
+
+	//Sends a client-side message to the console 
+	var announceui = function(message) {
+		var data = {type:"ui",who:_color,message:message};
+	}
 
 	//Activates player's ability to move
 	var activate = function() {
@@ -251,6 +261,10 @@ var kriegspiel = (function() {
 
 	var onFinish = function (data) {
 		announce(data);
+		disableOption("pawncaptures");
+		disableOption("occupies");
+		disableOption("offerdraw");
+		disableOption("resign");
 		deactivate();
 	}
 
@@ -411,26 +425,67 @@ var kriegspiel = (function() {
 	}
 
 	var doOfferdraw = function(e){
+		if(_movestate.okDrawOffer()) {
+			showDialog("offerdraw");
+		} else {
+			disableOption('offerdraw');
+			announceui("You already offered a draw");
+		}
 		return nobubble(e);
 	};
+
 	var doOfferdrawYes = function(e){
+		hideDialog("offerdraw");
+		disableOption('offerdraw')
+		_movestate.doDrawOffer();
+		_socket.emit('offerdraw',{gameid:_gameid});
 		return nobubble(e);
 	};
+
 	var doOfferdrawCancel = function(e){
+		hideDialog("offerdraw");
 		return nobubble(e);
 	};
 
 	var doResign = function(e){
+		showDialog("resign");
+		return nobubble(e);
+	};
+
+	var doResignYes = function(e){
+		hideDialog("resign");
+		disableOption('resign')
 		_socket.emit('resign',{gameid:_gameid});
 		return nobubble(e);
 	};
-	var doResignYes = function(e){
-		return nobubble(e);
-	};
+
 	var doResignCancel = function(e){
+		hideDialog("resign");
 		return nobubble(e);
 	};
-	
+
+	var doAcceptDraw = function(e){
+		_socket.emit('acceptdraw',{gameid:_gameid});
+		var message = $(this).parent();
+		message.find(".messagebutton").remove();
+		message.append("<span><em>(Draw Accepted!)</em></span>");
+		return nobubble(e);
+	};
+
+	var doDeclineDraw = function(e){
+		_socket.emit('declinedraw',{gameid:_gameid});
+		var message = $(this).parent();
+		message.find(".messagebutton").remove();
+		message.append("<span><em>(Draw Declined!)</em></span>");
+		return nobubble(e);
+	};
+
+	var doReplay = function(e){
+		location.href = "/games/"+_gameid+"?replay";
+		return nobubble(e);
+	};
+
+
 	//-----------------------------------------
 	//Load the templates	
 	$("script[data-type=template]").each(function(){
@@ -473,6 +528,10 @@ var kriegspiel = (function() {
 	$("#resign").on("click",doResign);
 	$("#resignyes").on("click",doResignYes);
 	$("#resigncancel").on("click",doResignCancel);
+
+	$("#console").on("click",".acceptdraw",doAcceptDraw);
+	$("#console").on("click",".declinedraw",doDeclineDraw);
+	$("#console").on("click",".replay",doReplay);
 
 	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
 

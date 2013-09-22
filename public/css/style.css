@@ -163,9 +163,15 @@ article > .announcements {
 	margin-bottom:20px;
 }
 
+article > hr {
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #fff;
+	width:535px;
+}
+
 .bottomright {
 	float:right;
-	margin-top: 25px;
+	margin-top: 15px;
 	margin-right:30px;
 }
 
