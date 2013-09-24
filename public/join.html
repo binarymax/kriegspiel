@@ -2,15 +2,25 @@
 <html>
 <head>
 <title>KRIEGSPIEL</title>
+<meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-22T22:05:29+0100" >
+<meta name="date" content="2013-09-24T12:38:02+0100" >
 <meta name="copyright" content="Max Irwin">
-<meta name="keywords" content="kriegspiel, chess, variant, game">
+<meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta http-equiv="content-type" content="application/html; charset=UTF-8">
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
+<meta name="canonical" content="http://krgspl.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:image" content="http://krgspl.com/img/chesspieces/wikipedia/bK.png"/>	
+<meta property="og:title" content="KRIEGSPIEL"/>
+<meta property="og:type" content="website"/>
+<meta property="og:description" content="The game of imperfect information"/>
+<meta property="og:url" content="http://krgspl.com/"/>
+<meta property="og:site_name" content="KRIEGSPIEL"/>
+<link rel="shortcut icon" href="http://static.krgspl.com/krgspl/img/chesspieces/wikipedia/bK.png" type="image/png" />
+<link rel="image_src" href="http://krgspl.com/img/chesspieces/wikipedia/bK.png" />
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="home">
@@ -26,8 +36,7 @@
 	
 	<section class="middle">
 
-			<article>
-				<div id="login" class="hidden">
+			<article id="login" class="hidden">
 					<form method="POST" action="/join" id="loginform">
 					<h3>Login or Create an Account</h3>
 					<div class="action right">
@@ -44,46 +53,49 @@
 						<br />
 					</div>
 					</form>
-				</div>
-				<div id="session" class="hidden">
-					<!-- <div class="right" style="margin-top:5px; margin-right:0px;"><a href="/logout">logout</a></div> -->
-					<h3>Welcome, <span id="sessionusername"></span>!</h3>
-					
-				</div>
+			</article>
+
+			<article id="session" class="hidden">
+				<h3>Welcome, <span id="sessionusername"></span>!</h3>
+				<center><a href="/logout">logout</a></center>					
 			</article>
 			
-			<br>
+			<div id="lists" class="hidden">
 
-			<article id="startgroup">
-				<h3>Start a New Game</h3>
-				<form id="startform">
-					<label class="selection"><input type="radio" name="variant" value="classic" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" checked="checked" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br>
-					<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />as white</label> <label class="selection"><input type="radio" name="startcolor" value="black" />as black</label><br>
-					<input type="submit" name="submit" value="Start!" class="join">
-				</form>
-			</article>
-
-			<br>
-
-			<article id="inactivegroup">
-				<h3>Join a game waiting for an opponent</h3>
-				<ul id="inactive" class="content"></ul>
-			</article>
+				<br>
+						
+				<article id="startgroup">
+					<h3>Start a New Game</h3>
+					<form id="startform">
+						<label class="selection"><input type="radio" name="variant" value="classic" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" checked="checked" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br>
+						<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />as white</label> <label class="selection"><input type="radio" name="startcolor" value="black" />as black</label><br>
+						<input type="submit" name="submit" value="Start!" class="join">
+					</form>
+				</article>
+			
+				<br>	
 		
-			<br>	
+				<article id="activegroup">
+					<h3>Your Games in progress</h3>
+					<ul id="active" class="content">
+					</ul>
+				</article>
 	
-			<article id="activegroup">
-				<h3>Games in progress</h3>
-				<ul id="active" class="content">
-				</ul>
-			</article>
+				<br>
+	
+				<article id="inactivegroup">
+					<h3>Join a game waiting for an opponent</h3>
+					<ul id="inactive" class="content"></ul>
+				</article>
+	
+				<br>
+			
+				<article id="finishedgroup">
+					<h3>Your completed Games</h3>
+					<ul id="finished" class="content"></ul>
+				</article>
 
-			<br>
-		
-			<article id="finishedgroup">
-				<h3>Games completed</h3>
-				<ul id="finished" class="content"></ul>
-			</article>
+			</div>
 
 	</section>
 
@@ -91,7 +103,7 @@
 	
 	<footer class="home">
 		<div class="content">
-			Copyright &copy; 2013, krgspl.com | Privacy Policy
+			Copyright &copy; 2013, krgspl.com | <a href="/">Home</a> | <a href="/join">Join</a> | <a href="/about">About</a> | <a href="/privacy">Privacy Policy</a> | krgspl.com uses cookies.
 		</div>
 	</footer>	
 	
@@ -100,14 +112,18 @@
 	</script>	
 	
 	<script type="text/template" data-type="template" data-template="active">
-		<li class="happening">{{white}}(white) is on move {{moves}} vs {{black}}(black)</li>	
-	</script>	
-
-	<script type="text/template" data-type="template" data-template="finished">
-		<li class="finished" data-gameid="{{gameid}}">{{white}}({{whitescore}}) vs {{black}}({{blackscore}}) <a href="/games/{{gameid}}?replay" class="right join">Replay!</a></li>	
+		<li class="happening">{{white}} vs {{black}}, move {{moves}}  <a href="/games/{{gameid}}" class="right join">Play!</a></li>	
 	</script>
 
-	<script type="text/javascript" src="http://staticmax.s3-website-us-east-1.amazonaws.com/krgspl/js/jquery-1.10.2.min.js"></script>
+	<script type="text/template" data-type="template" data-template="finished">
+		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}} {{result}} <a href="/games/{{gameid}}?replay" class="right join">Replay!</a></li>	
+	</script>
+
+	<script type="text/template" data-type="template" data-template="noresults">
+		<li class="noresults">You do not have any {{type}} games available.</li>
+	</script>
+
+	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/js/games.js"></script> 	
 	
 	<script type="text/javascript" >

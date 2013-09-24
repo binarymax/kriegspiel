@@ -130,7 +130,29 @@
 		}
 	});	
 
-	$("#startgame").on("click",doStartDialog);
+	var loadGames = function() {
+
+		$("#lists").show();
+
+		$.get("/games?state=inactive",function(data,status){
+			if(status==="success" && data) {
+				$("#inactive").render("inactive",data);
+			}		
+		});
+	
+		$.get("/games?state=active",function(data,status){
+			if(status==="success" && data) {
+				$("#active").render("active",data);
+			}		
+		});
+	
+		$.get("/games?state=finished",function(data,status){
+			if(status==="success" && data) {
+				$("#finished").render("finished",data);
+			}		
+		});
+
+	};
 
 	//-----------------------------------------
 	// AJAXY stuff
@@ -141,31 +163,17 @@
 			$("#sessionusername").text(data.username);			
 			$("#session").show();
 			$("#login").hide();
+			loadGames();
 		} else {
 			$("#session").hide();
 			$("#login").show();
 		}
 	},"json");
 
-	$.get("/games?state=inactive",function(data,status){
-		if(status==="success" && data) {
-			$("#inactive").render("inactive",data);
-		}		
-	});
-
-	$.get("/games?state=active",function(data,status){
-		if(status==="success" && data) {
-			$("#active").render("active",data);
-		}		
-	});
-
-	$.get("/games?state=finished",function(data,status){
-		if(status==="success" && data) {
-			$("#finished").render("finished",data);
-		}		
-	});
-
 	if (querystring("error")) alertError(querystring("error"));
 	if (querystring("message")) alertSuccess(querystring("message"));
+
+	//Wireup Events
+	$("#startgame").on("click",doStartDialog);
 
 })();

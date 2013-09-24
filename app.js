@@ -73,42 +73,63 @@ var file = function(filename) { return function(req,res){ res.sendfile(filename)
 //Routes
 app.get('/', file('public/index.html'));
 
+app.get('/join/?', file('public/join.html'));
+
+app.get('/about/?', file('public/about.html'));
+
+app.get('/privacy/?', file('public/privacy.html'));
+
 app.get('/robots.txt', file('public/robots.txt'));
 
 app.get('/google70e3e038531249c6.html', file('public/google70e3e038531249c6.html'));
 
-app.get('/join/?', file('public/join.html'));
-
 //Logs in or creates a new user
 app.post('/join/?', function(req,res) {
-	if(!req.session || !req.session.username) { 
-		//No session or username
-		security.loginOrCreateUser(req,res);
-	}
+	security.loginOrCreateUser(req,res);
 });
 
 //Gets a list of games
 app.get('/games/?',function(req,res) {
-	var state = spiel.state(req.query.state||'active');
-	db.findGamesByFilter(
-		{state:state},
-		function(rec){ 
-			var out = {
-				gameid:rec.gameid,
-				white:rec.whiteusername,
-				black:rec.blackusername,
-				state:spiel.state(rec.state),
-				turn:rec.turn,
-				moves:rec.history.length/2
-			};
-			
-			if(req.query.all) out.messages = rec.messages;
-			return out;
-		},
-		function(err,records){
-			res.send(200,records);
-		}
-	);
+
+	var state  = spiel.state(req.query.state||'active');
+
+	var all = req.query.all?true:false;
+
+	//Sends the result
+	var send = function(err,records){ if(err) res.send(500,err); else res.send(200,records); };
+
+	var format = function(rec){ 
+		//Formats a game record for listing (hide secret opponent stuff)
+		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.white) : "";
+		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin};
+		if (all) out.messages = rec.messages;
+		return out;
+	};
+		
+	if (state==='inactive') {
+		//Get all the inactive games
+		db.findGamesByFilter({state:state},format,send);
+		
+	} else if (req && req.session && req.session.username) {
+		//Get the user's games (both as black and white)
+		var username = req.session.username;
+		var output = [];
+		var count = 0;
+		
+		//Merges the two color results
+		var merge = function(err,records) { output = output.concat(records); if (++count===2) send(null,output); }
+		
+		//Get the user's games as white
+		db.findGamesByFilter({state:state,whiteusername:username},format,merge);
+		
+		//Get the user's games as black
+		db.findGamesByFilter({state:state,blackusername:username},format,merge);
+
+	} else {
+		//No session, No data for you!
+		req.send(204,false);
+	}
+	
 });
 
 //Checks the database for an existing username
@@ -122,9 +143,12 @@ app.get('/usernames/:username',function(req,res){
 app.get('/session',function(req,res){
 	if(req.session && req.session.username) {
 		var data = {};
+		//Send user session information, but not cookie stuff
 		for(var s in req.session) { if(req.session.hasOwnProperty(s) && s!=='cookie') data[s] = req.session[s]; }
 		res.send(200,data);
+
 	} else {
+		//No session, No data for you!
 		res.send(204,false);
 	}
 });
