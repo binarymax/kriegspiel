@@ -13,14 +13,16 @@ var replay = (function() {
 	var _colors  = {'w':'white','b':'black'};
 	var _colorx  = {'white':'black','black':'white'};
 	var _gameid  = location.href.substr(location.href.indexOf('/games/')+7);
+
+	var _hist = []; //Position history (for prevMove)
 	
-	var _color; //Your color
-	var _oppos; //Your opponents color
-	var _board; //Your board
-	var _p,_o;  //First chars of your color and opponents color
-	var _temp;  //Temporary position to reset illegal moves
-	var _game;  //Game data loaded from server
-	var _move;  //Current move number
+	var _color;  //Your color
+	var _oppos;  //Your opponents color
+	var _chess;  //Chess logic
+	var _board;  //Your board
+	var _game;   //Game data loaded from server
+	var _hlen=0; //Total Moves
+	var _move=1; //Current move number
 	
 	//Common board functions:
 	var ranks = '1,2,3,4,5,6,7,8'.split(',');
@@ -66,37 +68,47 @@ var replay = (function() {
 		$("#"+option).removeClass("disabled").removeAttr("disabled");
 	};
 
-	var movePiece = function(move,num) {
-		_board.move(move);
-		if(num>0) enableOption("prevmove");
-		else disableOption("prevmove");
-		if(num<_game.history.length-1) enableOption("nextmove");
-		else disableOption("nextmove");
+	var setPosition = function(pos,num) {
+		_board.position(pos);
+
+		if(num>0) enableOption("prevmove"); else disableOption("prevmove");
+		if(num!==0) enableOption("firstmove"); else disableOption("firstmove");
+		if(num<_hlen) enableOption("nextmove"); else disableOption("nextmove");
+		if(num!==_hlen) enableOption("lastmove"); else disableOption("lastmove");
+
 	};
 	
 	var prevMove = function(){
-		if(_move>0) {
-			var from = _game.history[_move].to; 
-			var to = _game.history[_move].from;
-			_move--;
-			movePiece(from+'-'+to,_move);
-		}
+		if(_move>0) setPosition(_hist[--_move],_move);
+		_move = _move<0?0:_move;
 	};
 
 	var nextMove = function(){
-		if(_move<_game.history.length-1) {
-			_move++;
-			var from = _game.history[_move].from;
-			var to = _game.history[_move].to;
-			movePiece(from+'-'+to,_move);
-		}
+		if(_move<_hlen) setPosition(_hist[++_move],_move);
+		_move = _move>=_hlen?_hlen:_move;
+	};
+
+	var nextMove = function(){
+		if(_move<_hlen) setPosition(_hist[++_move],_move);
+		_move = _move>=_hlen?_hlen:_move;
+	};
+
+	var firstMove = function(){
+		_move = 0;
+		setPosition(_hist[_move],_move);
+	};
+	
+	var lastMove = function(){
+		_move = _hlen;
+		setPosition(_hist[_move],_move);
 	};
 
 	//Fired when player joins
 	var loadGame = function(data) {
 
 		_game = data;
-		_move = -1;
+		_hlen = data.history.length;
+		_move = 0;
 
 		$("#wait").remove();
 		$("#board").show();
@@ -110,6 +122,16 @@ var replay = (function() {
 		$("#enddate").text(ended);
 
 
+		if(!_chess) {
+			//Memoize the position history for navigation
+			_chess = new Chess();
+			_hist.push(_chess.fen());
+			for(var i=0;i<_hlen;i++) {
+				_chess.move(_game.history[i]);
+				_hist.push(_chess.fen());
+			}
+		}
+
 		if(!_board) {
 			_board = new ChessBoard('board', {
 			  draggable: false,
@@ -121,9 +143,11 @@ var replay = (function() {
 			_board.start(false);
 		}
 				
+		disableOption("firstmove");
 		disableOption("prevmove");
 		enableOption("nextmove");
-				
+		enableOption("lastmove");
+		
 	};
 
 	//Fired when game has an error
@@ -135,6 +159,11 @@ var replay = (function() {
 	//Client events	
 	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
 
+	var onFirstMove = function(e) {
+		firstMove();
+		return nobubble(e);
+	};
+
 	var onPrevMove = function(e) {
 		prevMove();
 		return nobubble(e);
@@ -144,6 +173,12 @@ var replay = (function() {
 		nextMove();
 		return nobubble(e);
 	};
+
+	var onLastMove = function(e) {
+		lastMove();
+		return nobubble(e);
+	};
+
 
 	var onKeyup = function(e) {
 		switch(e.which) {
@@ -155,8 +190,10 @@ var replay = (function() {
 
 	//-----------------------------------------
 	//Wireup Events
+	$("#firstmove").on("click",onFirstMove);
 	$("#prevmove").on("click",onPrevMove);
 	$("#nextmove").on("click",onNextMove);
+	$("#lastmove").on("click",onLastMove);
 	$(document.body).on("keyup",onKeyup);
 
 
