@@ -8,6 +8,8 @@
 	};
 	document.getElementById("type").innerHTML = querystring("type")||"classic";
 
+	var onehalf = $("script[data-template='half']").html();
+
 	var messages = {
 		"goodlogin": "Welcome back!",
 		"createdlogin": "Thanks for joining!  Get ready for some Kriegspiel",
@@ -44,7 +46,7 @@
 					html  = html.replace(rekey,record[key]);
 				}
 			}
-			$target.append(html);
+			$target.append(html.replace(/0\.5/g,onehalf).replace(/\.5/g,onehalf));
 		};
 		return $target;
 	}

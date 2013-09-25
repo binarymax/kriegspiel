@@ -100,7 +100,7 @@ app.get('/games/?',function(req,res) {
 
 	var format = function(rec){ 
 		//Formats a game record for listing (hide secret opponent stuff)
-		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.white) : "";
+		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
 		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin};
 		if (all) out.messages = rec.messages;
 		return out;
