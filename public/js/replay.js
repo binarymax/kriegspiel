@@ -69,8 +69,8 @@ var replay = (function() {
 	};
 
 	var setPosition = function(pos,num) {
-		_board.position(pos);
-
+		_board.position(pos.position);
+		loadmessages(pos.messages);
 		if(num>0) enableOption("prevmove"); else disableOption("prevmove");
 		if(num!==0) enableOption("firstmove"); else disableOption("firstmove");
 		if(num<_hlen) enableOption("nextmove"); else disableOption("nextmove");
@@ -102,6 +102,18 @@ var replay = (function() {
 		_move = _hlen;
 		setPosition(_hist[_move],_move);
 	};
+	
+	var getMessages = function(all,num) {
+		var messages = [];
+		var maximum = num?num+1:1;
+		for(var i=0,l=all.length;i<l;i++) {
+			if(all[i].type==='welcome') all[i].movenumber=-1;
+			if(all[i].movenumber<=maximum) {
+				messages.push(all[i]);
+			}
+		}
+		return messages;
+	};
 
 	//Fired when player joins
 	var loadGame = function(data) {
@@ -123,12 +135,12 @@ var replay = (function() {
 
 
 		if(!_chess) {
-			//Memoize the position history for navigation
+			//Memoize the position and message history for navigation
 			_chess = new Chess();
-			_hist.push(_chess.fen());
+			_hist.push({position:_chess.fen(),messages:getMessages(_game.messages,0)});
 			for(var i=0;i<_hlen;i++) {
 				_chess.move(_game.history[i]);
-				_hist.push(_chess.fen());
+				_hist.push({position:_chess.fen(),messages:getMessages(_game.messages,i)});
 			}
 		}
 
@@ -142,11 +154,14 @@ var replay = (function() {
 
 			_board.start(false);
 		}
-				
+
+		setPosition(_hist[0],0);
+		/*		
 		disableOption("firstmove");
 		disableOption("prevmove");
 		enableOption("nextmove");
 		enableOption("lastmove");
+		*/
 		
 	};
 
