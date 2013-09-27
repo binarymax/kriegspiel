@@ -88,8 +88,23 @@ app.post('/join/?', function(req,res) {
 	security.loginOrCreateUser(req,res);
 });
 
+app.post('/start/?', security.authenticateUser, function(req,res) {
+	//security.loginOrCreateUser(req,res);
+	var gameid = Math.floor(Math.random()*100000).toString(16);
+	var variant = req.body.variant;
+	var color = req.body.startcolor;
+	var player = req.session.username;
+	spiel.add(gameid,variant,color,player,function(game){
+		res.redirect('/games/'+gameid);
+	});
+});
+
+//Starts up a new game
+app.get('/start/?', security.authenticateUser, newGame);
+
+
 //Gets a list of games
-app.get('/games/?',function(req,res) {
+app.get('/games/?', security.authenticateUser, function(req,res) {
 
 	var state  = spiel.state(req.query.state||'active');
 
@@ -152,9 +167,6 @@ app.get('/session',function(req,res){
 		res.send(204,false);
 	}
 });
-
-//Starts up a new game
-app.get('/start/?', security.authenticateUser, newGame);
 
 //Gets a game html file
 app.get('/games/:gameid',security.authenticateUser,function(req,res){

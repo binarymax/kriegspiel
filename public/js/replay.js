@@ -156,12 +156,6 @@ var replay = (function() {
 		}
 
 		setPosition(_hist[0],0);
-		/*		
-		disableOption("firstmove");
-		disableOption("prevmove");
-		enableOption("nextmove");
-		enableOption("lastmove");
-		*/
 		
 	};
 

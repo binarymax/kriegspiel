@@ -6,7 +6,6 @@
 	  var results = regex.exec( url );
 	  return (!results)?"":decodeURIComponent(results[1].replace(/\+/g, " "));
 	};
-	document.getElementById("type").innerHTML = querystring("type")||"classic";
 
 	var onehalf = $("script[data-template='half']").html();
 
@@ -156,6 +155,19 @@
 
 	};
 
+	var setVariant = function() {
+		var variant = querystring("type")||"lovenheim";
+		$("#type").text(variant);
+		$("input[name=variant]").each(function(){
+			var radio = $(this);
+			if (radio.val()===variant) {
+				radio.attr("checked","checked"); 
+			} else {
+				radio.removeAttr("checked");
+			} 
+		});
+	};
+
 	//-----------------------------------------
 	// AJAXY stuff
 	
@@ -174,6 +186,8 @@
 
 	if (querystring("error")) alertError(querystring("error"));
 	if (querystring("message")) alertSuccess(querystring("message"));
+
+	setVariant();
 
 	//Wireup Events
 	$("#startgame").on("click",doStartDialog);
