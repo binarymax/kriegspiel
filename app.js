@@ -196,7 +196,6 @@ app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	}
 });
 
-
 app.get('/logout',security.authenticateUser,function(req,res){
 	req.session.destroy(function(){res.redirect('/join')});
 });
