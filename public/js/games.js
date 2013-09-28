@@ -68,21 +68,25 @@
 				isExists = isExists.toString();
 				$("#newusername").text((isExists==='true')?'(taken)':'(available)');
 				$("#newusername").css("color",(isExists==='true')?'red':'green');
+				$("#istaken").val(isExists);
 			});
 		}
 	};			
 	
 	//Toggles if the 'create new account' box is checked
 	var newAccount = false;
-	$("#newaccount").on("click",function(e) {
+	var setNewAccount = function(e) {
 		if ($("#newaccount > input").is(":checked")) {
-			newAccount = true; 
+			newAccount = true;
+			checkUsername();
 			$("#newfields").show();
 		} else {
 			newAccount = false;
+			$("#istaken").val('false');
+			$("#newusername").text('');
 			$("#newfields").hide();
 		}
-	});
+	};
 	
 	//Checks for keypresses on username to trigger checkUsername
 	var usernameTimeout = 0;
@@ -98,11 +102,13 @@
 	$("#loginform").on("submit",function(e) {
 		var $login = $(this);
 		if(!$login.attr("data-override")) {
+			$("#formerrors").html('').hide();
 			var doSubmit=true;
 			var errors = [];
 			var username=$("#username").val();
 			var password=$("#password1").val();
-			var password2=$("#password1").val();
+			var password2=$("#password2").val();
+			var istaken=$("#istaken").val()==='true'?true:false;
 			if (!username.length) {
 				errors.push('Username is missing');
 				doSubmit = false;
@@ -115,15 +121,13 @@
 			} else if (newAccount && password!==password2) {
 				errors.push('Passwords do not match');
 				doSubmit = false;
-			} else if (newAccount) {
+			} else if (newAccount && istaken) {
+				errors.push('Sorry! that username is not available');
 				doSubmit=false;
-				checkUsername(function(isExists){
-					$login.attr("data-override",true);
-					if(!isExists) $login.submit();
-					else alertError("Sorry! that username is not available");
-				});
 			}
+			
 			if(!doSubmit) {
+				$(errors).each(function(){ $("#formerrors").show().append("<div>"+this+"</div>"); });
 				e.stopPropagation();
 				e.preventDefault();
 				return false;
@@ -187,9 +191,12 @@
 	if (querystring("error")) alertError(querystring("error"));
 	if (querystring("message")) alertSuccess(querystring("message"));
 
-	setVariant();
-
 	//Wireup Events
 	$("#startgame").on("click",doStartDialog);
+	$("#newaccount").on("click",setNewAccount);
 
+	setVariant();
+	setNewAccount();
+
+	
 })();
