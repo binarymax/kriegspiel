@@ -171,10 +171,13 @@ app.get('/session',function(req,res){
 //Gets a game html file
 app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
+	var username = req.session.username;
 	if (okId(gameid)) {
 		spiel.find(gameid,function(game){
 			if(game.state === spiel.state('finished')) {
 				res.redirect('/replays/'+gameid);
+			} else if (game.white.username && game.white.username!==username && game.black.username && game.black.username!==username) {
+				res.redirect('/join?error=gameactive');
 			} else {
 				res.sendfile('public/game.html');
 			}
