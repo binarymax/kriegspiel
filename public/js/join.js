@@ -15,7 +15,9 @@
 		"badlogin": "Sorry, incorrect username or password",
 		"missinglogin": "Please provide both username and password",
 		"login": "Sorry, you need to login before you can do that",
-		"badid": "Sorry, the gameid was invalid"
+		"badid": "Sorry, that gameid was invalid",
+		"gameactive": "Sorry, that game is still in play, no peeking!",
+		"gamenotfound": "Sorry, that game could not be found"
 	}
 
 	//Shows a success banner 

@@ -12,7 +12,7 @@ var replay = (function() {
 	var _variant = {'occupies':true};
 	var _colors  = {'w':'white','b':'black'};
 	var _colorx  = {'white':'black','black':'white'};
-	var _gameid  = location.href.substr(location.href.indexOf('/games/')+7);
+	var _gameid  = location.href.substr(location.href.indexOf('/replays/')+9);
 
 	var _hist = []; //Position history (for prevMove)
 	

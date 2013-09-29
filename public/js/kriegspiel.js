@@ -532,7 +532,7 @@ var kriegspiel = (function() {
 	};
 
 	var doReplay = function(e){
-		location.href = "/games/"+_gameid+"?replay";
+		location.href = "/replays/"+_gameid;
 		return nobubble(e);
 	};
 

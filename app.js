@@ -171,12 +171,30 @@ app.get('/session',function(req,res){
 //Gets a game html file
 app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
-	if(okId(gameid)) {
+	if (okId(gameid)) {
+		spiel.find(gameid,function(game){
+			if(game.state === spiel.state('finished')) {
+				res.redirect('/replays/'+gameid);
+			} else {
+				res.sendfile('public/game.html');
+			}
+		});
+	} else {
+		badId(res);
+	}
+});
+
+//Gets a game replay
+app.get('/replays/:gameid',function(req,res){
+	var gameid = req.params.gameid;
+	if (okId(gameid)) {
 		spiel.find(gameid,function(game){
 			if(game.state === spiel.state('finished')) {
 				res.sendfile('public/replay.html');
+			} else if (game.white.username || game.black.username) {
+				res.redirect('/join?error=gameactive');
 			} else {
-				res.sendfile('public/game.html');
+				res.redirect('/join?error=gamenotfound');
 			}
 		});
 	} else {
