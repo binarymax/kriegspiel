@@ -124,10 +124,11 @@ var kriegspiel = (function() {
 	}
 
 	//Activates player's ability to move
-	var activate = function() {
-		if(!_active) _movestate.reset();		
+	var activate = function(noreset) {
+		if(!_active && !noreset) _movestate.reset();		
 		_active=true;
 		resetOptions();
+		//if (!noreset) resetOptions();
 	}
 	
 	//Deactivates player's ability to move
@@ -214,7 +215,7 @@ var kriegspiel = (function() {
 		_movestate.deserialize(state);
 		resetOptions();
 	}
-		
+
 	//-----------------------------------------
 	//Socket Events
 	var onMove = function (data) {
@@ -242,7 +243,7 @@ var kriegspiel = (function() {
 		announce(data);
 		if (data.action === 'start') {
 			_board.position(_temp);
-			activate();
+			activate(true);
 		} else {
 			deactivate();
 		}
@@ -252,7 +253,7 @@ var kriegspiel = (function() {
 		announce(data);
 		if (data.action === 'start') {
 			_board.position(_temp);
-			activate();
+			activate(true);
 		} else {
 			deactivate();
 		}
