@@ -33,12 +33,15 @@ var kriegspiel = (function() {
 			movestate.prototype = {
 				okOccupies:function(){ return this.occupies<0; },
 				isOccupies:function(){ return this.occupies===0; },
+				noOccupies:function(){ return this.occupies=-1; },
 				doOccupies:function(){ return ++this.occupies; },
 				okDrawOffer:function(){ return this.drawoffer<0; },
 				isDrawOffer:function(){ return this.drawoffer===0; },				
+				noDrawOffer:function(){ return this.drawoffer=-1; },				
 				doDrawOffer:function(){ return ++this.drawoffer; },
 				okPawnCaptures:function(){ return this.pawncaptures<0; },
 				isPawnCaptures:function(){ return this.pawncaptures===0; },
+				noPawnCaptures:function(){ return this.pawncaptures=-1; },
 				doPawnCaptures:function(){ return ++this.pawncaptures; },
 				reset : function(){			
 					this.occupies=-1;
@@ -297,6 +300,7 @@ var kriegspiel = (function() {
 			  dropOffBoard: 'trash',
 			  sparePieces: true,
 			  onDrop:drop,
+			  onDragStart:drag,
 			  orientation: _color,
 			  fade: _o,
 			  assetHost: 'http://static.krgspl.com/krgspl'
@@ -413,6 +417,13 @@ var kriegspiel = (function() {
 			move(source, target, piece, newPos, oldPos, orientation);
 		}
 	};
+	
+	var drag = function(source, piece, position, orientation) {
+		if (_movestate.okOccupies() && $("div[data-square='"+source+"']").hasClass('highlight-occupies')) {
+			doOccupiesSquare(source);
+			return false;
+		}
+	};
 
 
 	var doPawncaptures = function(e){
@@ -420,7 +431,7 @@ var kriegspiel = (function() {
 			_socket.emit('pawncaptures',{gameid:_gameid});
 			_movestate.doPawnCaptures();
 			resetOptions();
-		}	
+		}
 		return nobubble(e);
 	};
 
@@ -436,7 +447,7 @@ var kriegspiel = (function() {
 	var doOccupiesSquare = function(e) {
 		clearOccupies();
 		if(_active && _variant.occupies && _movestate.okOccupies()) {
-			var square = $(this).attr("data-square");
+			var square = (typeof e === "string") ? e : $(this).attr("data-square");
 			_movestate.doOccupies();
 			_socket.emit('occupies',{gameid:_gameid,target:square});
 			resetOptions();
@@ -472,6 +483,7 @@ var kriegspiel = (function() {
 
 	var doOccupiesCancel = function(e){
 		clearOccupies();
+		_movestate.noOccupies();
 		return nobubble(e);
 	}
 	
