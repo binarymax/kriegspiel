@@ -230,6 +230,14 @@ var kriegspiel = (function() {
 		else deactivate();
 	};
 
+	var onEnPassant = function (data) {
+		announce(data);
+		if (data.who !== _color) _board.trash(data.square);
+		if (data.action === 'start') activate();
+		else deactivate();
+	};
+
+
 	var onImpossible = function (data) {
 		announce(data);
 		if (data.action === 'start') {
@@ -554,6 +562,7 @@ var kriegspiel = (function() {
 
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
+	_socket.on('enpassant', onEnPassant);
 	_socket.on('inactive', onInactive);
 	_socket.on('finished', onFinished);
 	_socket.on('gameover', onGameover);	
