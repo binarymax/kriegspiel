@@ -262,6 +262,17 @@ var kriegspiel = (function() {
 		}
 	}
 
+	var onPawnCapturesTry = function (data) {
+		announce(data);
+		if (data.action === 'start') {
+			_board.position(_temp);
+			activate(true);
+		} else {
+			deactivate();
+		}
+	}
+
+
 	var onInactive = function (data) {
 		announce(data);
 		_board.position(_temp);
@@ -573,6 +584,7 @@ var kriegspiel = (function() {
 	_socket.on('declinedraw', announce);	
 	_socket.on('pawncaptures', announce);
 
+	_socket.on('pawncapturestry', onPawnCapturesTry);
 	_socket.on('kriegspiel', onKriegspiel);
 	_socket.on('impossible', onImpossible);
 	_socket.on('enpassant', onEnPassant);
