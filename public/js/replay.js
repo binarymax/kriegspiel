@@ -119,6 +119,7 @@ var replay = (function() {
 	var loadGame = function(data) {
 
 		_game = data;
+		_color = data.orientation;
 		_hlen = data.history.length;
 		_move = 0;
 
@@ -150,7 +151,7 @@ var replay = (function() {
 			  sparePieces: false,
 			  orientation: _color,
 			  assetHost: 'http://static.krgspl.com/krgspl'
-			}); 
+			});
 
 			_board.start(false);
 		}

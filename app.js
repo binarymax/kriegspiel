@@ -89,18 +89,19 @@ app.post('/join/?', function(req,res) {
 });
 
 app.post('/start/?', security.authenticateUser, function(req,res) {
-	//security.loginOrCreateUser(req,res);
 	var gameid = Math.floor(Math.random()*100000).toString(16);
 	var variant = req.body.variant;
-	var color = req.body.startcolor;
-	var player = req.session.username;
-	spiel.add(gameid,variant,color,player,function(game){
+	var color   = req.body.startcolor;
+	var player  = req.session.username;
+	var rated   = req.body.ratedgame === 'rated' ? true : false;
+	if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
+	spiel.add(gameid,variant,color,player,rated,function(game){
 		res.redirect('/games/'+gameid);
 	});
 });
 
 //Starts up a new game
-app.get('/start/?', security.authenticateUser, newGame);
+//app.get('/start/?', security.authenticateUser, newGame);
 
 
 //Gets a list of games
@@ -113,7 +114,7 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 	//Sends the result
 	var send = function(err,records){ if(err) res.send(500,err); else res.send(200,records); };
 
-	var format = function(rec){ 
+	var format = function(rec) { 
 		//Formats a game record for listing (hide secret opponent stuff)
 		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
 		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin};
@@ -210,7 +211,9 @@ app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
 	if(okId(gameid)) {
 		spiel.find(gameid,function(game){
-			res.send(game.serialize());
+			var data = game.serialize()
+			data.orientation = (req.session.username === data.blackusername) ? 'black' : 'white';
+			res.send(data);
 		});
 	} else {
 		badId(res);
