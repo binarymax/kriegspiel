@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-10-05T11:04:11+0100" >
+<meta name="date" content="2013-10-12T15:04:01+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -70,14 +70,20 @@
 				<article id="startgroup">
 					<h3>Start a New Game</h3>
 					<form method="POST" action="/start" id="startform">
-						<label class="selection"><input type="radio" name="variant" value="classic" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" checked="checked" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br>
-						<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />as white</label> <label class="selection"><input type="radio" name="startcolor" value="black" />as black</label> <label class="selection"><input type="radio" name="startcolor" value="random" />random</label><br>
+						<!-- <label class="selection"><input type="radio" name="variant" value="classic" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" checked="checked" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br> -->
+						<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />As White</label> <label class="selection"><input type="radio" name="startcolor" value="black" />As Black</label> <label class="selection"><input type="radio" name="startcolor" value="random" />Random</label><br>
 						<label class="selection"><input type="radio" name="ratedgame" value="rated" checked="checked" />Rated</label> <label class="selection"><input type="radio" name="ratedgame" value="unrated" />Unrated</label><br>
 						<input type="submit" name="submit" value="Start!" class="join">
 					</form>
 				</article>
 			
 				<br>	
+				<article id="inactivegroup">
+					<h3>Join a game waiting for an opponent</h3>
+					<ul id="inactive" class="content"></ul>
+				</article>
+	
+				<br>			
 		
 				<article id="activegroup">
 					<h3>Your Games in progress</h3>
@@ -87,13 +93,6 @@
 	
 				<br>
 	
-				<article id="inactivegroup">
-					<h3>Join a game waiting for an opponent</h3>
-					<ul id="inactive" class="content"></ul>
-				</article>
-	
-				<br>
-			
 				<article id="finishedgroup">
 					<h3>Your completed Games</h3>
 					<ul id="finished" class="content"></ul>
@@ -112,8 +111,8 @@
 	</footer>	
 	
 	<script type="text/template" data-type="template" data-template="inactive">
-		<li class="waiting" data-gameid="{{gameid}}">{{white}}(white) is waiting for an opponent(black) <a href="/games/{{gameid}}" class="right join">Join!</a></li>	
-	</script>	
+		<li class="waiting" data-gameid="{{gameid}}">{{player}}({{pcolor}}) is waiting for an opponent({{ocolor}}) ({{rated}})<a href="/games/{{gameid}}" class="right join">Join!</a></li>	
+	</script>
 	
 	<script type="text/template" data-type="template" data-template="active">
 		<li class="happening">{{white}} vs {{black}}, move {{moves}}  <a href="/games/{{gameid}}" class="right join">Play!</a></li>	
@@ -130,6 +129,7 @@
 	<script type="text/template" data-type="template" data-template="half">½</script>
 
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="/js/join.js"></script> 	
 	
 	<script type="text/javascript" >

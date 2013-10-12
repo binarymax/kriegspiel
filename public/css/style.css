@@ -178,6 +178,8 @@ article hr {
 	display:none;
 }
 
+.playnow,
+.playnow:visited,
 .action > *,
 .action > *:visited {
 	padding:10px;
@@ -198,6 +200,19 @@ article hr {
 	background: linear-gradient(to bottom,  rgba(180,227,145,1) 0%,rgba(97,196,25,1) 50%,rgba(180,227,145,1) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
 	text-decoration: none;
+}
+
+
+
+.playnow {
+	text-align:center;
+	display:inline-block;
+	margin-top:50px;
+	margin-bottom:50px;
+	position:relative;
+	left:50%;
+	margin-left:-253px;
+	width:505px;
 }
 
 #login {

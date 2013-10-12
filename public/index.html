@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-27T11:06:17+0100" >
+<meta name="date" content="2013-10-12T15:28:59+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -36,35 +36,16 @@
 		<article id="introduction">
 
 			<h2>You can see your pieces, but not your opponents!</h2>
+			<!--
 			<ul id="variants">
 				<li class="variant" data-for="classic"><a href="#classic"><h3>Classic Kriegspiel</h3></a></li>
 				<li class="variant" data-for="lovenheim"><a href="#lovenheim"><h3>Lovenheim Variant</h3></a></li>
 				<li class="variant" data-for="rochester"><a href="#rochester"><h3>Rochester Variant</h3></a></li>
 			</ul>
+			-->
 
-			<div id="fb-root"></div>
-			<script>(function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script>
-			<div class="fb-like social-left" data-href="http://krgspl.com" data-width="400" data-show-faces="true" data-send="true"></div>
-			<div class="social-right"><a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-size="small" data-url="http://krgspl.com/" data-text="If you like chess, you will hate #kriegspiel.">Tweet</a></div>
-			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
-		</article>
-		
-		<br>		
-		
-		<article id="classic">
-			<a name="classic"></a>
-			<h3>Classic Kriegspiel</h3>
-			<div class="content">
-				<div class="tip">You move like chess</div>
-				<div class="tip">We give you some information</div>
-				<div class="tip">Know if you make an illegal move</div>
-				<div class="tip">Ask if there are any pawn captures</div>
-				<div class="tip">Know from where a check originates</div>
-				<div class="tip">We tell you when you capture a piece</div>
-			</div>
-
-			<!--
+			<a href="/join?type=classic" class="playnow">Play Now!</a>
+			
 			<p class="content">
 				Kriegspiel (German for "War Game") is a chess variant of imperfect information.  The premise is that, like war, you can see your own position, but not that of your opponent.  You follow the rules of normal chess, and some information is given to you, but otherwise you must deduce where your opponents pieces are in order to win.  All information that is shared by the game is shared to both black and white.  There are many variations of Kriegspeil, and each variation reveals different information.  The more information you have, either directly or though deduction, the easier it is to win!
 			</p>
@@ -77,42 +58,20 @@
 			<p class="content">
 				Listed below are all the possible announcements that can be shared with both players.  				
 			</p>
-			-->
 
-			<hr>
-
-			<div class="action bottomright">
-				<a href="/join?type=classic">Play Now!</a>
-			</div>
-
-			<div class="announcements">
-				<h4>Possible Announcements:</h4>
-				<ul class="content">
-					<li>[color] has moved</li>
-					<li>[color] has moved and [color] is in check on the rank</li>
-					<li>[color] has moved and [color] is in check on the file</li>
-					<li>[color] has moved and [color] is in check on the long diagonal</li>
-					<li>[color] has moved and [color] is in check on the short diagonal</li>
-					<li>[color] has moved and [color] is in check by a knight</li>
-					<li>[color] has moved and [color] is in checkmate</li>
-					<li>[color] has moved and [color] is in stalemate</li>
-					<li>[color] has attempted an illegal move</li>
-					<li>[color] has captured a piece on [square]</li>					
-					<li>[color] has captured a pawn on [square]</li>					
-					<li>[color] has captured a pawn on [square], en pessant!</li>
-					<li>[color] has available pawn captures and must attempt one</li>
-					<li>[color] has no available pawn captures</li>
-					<li>[color] has promoted</li>
-				</ul>
-			</div>
+			<div id="fb-root"></div>
+			<div class="fb-like social-left" data-href="http://krgspl.com" data-width="400" data-show-faces="true" data-send="true"></div>
+			<div class="social-right"><a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-size="small" data-url="http://krgspl.com/" data-text="If you like chess, you will hate #kriegspiel.">Tweet</a></div>
 
 		</article>
-	
-		<br>	
+		
+		<br>		
+
 	
 		<article id="lovenheim">
 			<a name="lovenheim"></a>
-			<h3>Lovenheim variant</h3>
+			<!-- <h3>Lovenheim variant</h3> -->
+			<h3>The krgspl.com variation</h3>
 			<div class="content">
 				<div class="tip">You move like chess</div>
 				<div class="tip">We reveal illegal move squares</div>
@@ -148,9 +107,55 @@
 			</div>
 
 		</article>
+		
+		<!--		
 	
 		<br>	
+
+		<article id="classic">
+			<a name="classic"></a>
+			<h3>Classic Kriegspiel</h3>
+			<div class="content">
+				<div class="tip">You move like chess</div>
+				<div class="tip">We give you some information</div>
+				<div class="tip">Know if you make an illegal move</div>
+				<div class="tip">Ask if there are any pawn captures</div>
+				<div class="tip">Know from where a check originates</div>
+				<div class="tip">We tell you when you capture a piece</div>
+			</div>
+
+
+			<hr>
+
+			<div class="action bottomright">
+				<a href="/join?type=classic">Play Now!</a>
+			</div>
+
+			<div class="announcements">
+				<h4>Possible Announcements:</h4>
+				<ul class="content">
+					<li>[color] has moved</li>
+					<li>[color] has moved and [color] is in check on the rank</li>
+					<li>[color] has moved and [color] is in check on the file</li>
+					<li>[color] has moved and [color] is in check on the long diagonal</li>
+					<li>[color] has moved and [color] is in check on the short diagonal</li>
+					<li>[color] has moved and [color] is in check by a knight</li>
+					<li>[color] has moved and [color] is in checkmate</li>
+					<li>[color] has moved and [color] is in stalemate</li>
+					<li>[color] has attempted an illegal move</li>
+					<li>[color] has captured a piece on [square]</li>					
+					<li>[color] has captured a pawn on [square]</li>					
+					<li>[color] has captured a pawn on [square], en pessant!</li>
+					<li>[color] has available pawn captures and must attempt one</li>
+					<li>[color] has no available pawn captures</li>
+					<li>[color] has promoted</li>
+				</ul>
+			</div>
+
+		</article>
 	
+		<br>	
+		
 		<article id="rochester">
 			<a name="rochester"></a>
 			<h3>Rochester variant</h3>
@@ -187,7 +192,8 @@
 
 		</article>
 
-
+		-->
+	
 	</section>
 	
 	<br>
@@ -206,6 +212,11 @@
 	  ga('create', 'UA-22107593-9', 'krgspl.com');
 	  ga('send', 'pageview');
 	</script>
-		
+
+	<script>(function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+
+
 </body>
 </html>

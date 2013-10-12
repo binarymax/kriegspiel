@@ -90,7 +90,7 @@ app.post('/join/?', function(req,res) {
 
 app.post('/start/?', security.authenticateUser, function(req,res) {
 	var gameid = Math.floor(Math.random()*100000).toString(16);
-	var variant = req.body.variant;
+	var variant = 'lovenheim'; //req.body.variant;
 	var color   = req.body.startcolor;
 	var player  = req.session.username;
 	var rated   = req.body.ratedgame === 'rated' ? true : false;
@@ -106,9 +106,8 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 
 //Gets a list of games
 app.get('/games/?', security.authenticateUser, function(req,res) {
-
+ 
 	var state  = spiel.state(req.query.state||'active');
-
 	var all = req.query.all?true:false;
 
 	//Sends the result
@@ -117,12 +116,13 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 	var format = function(rec) { 
 		//Formats a game record for listing (hide secret opponent stuff)
 		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
-		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin};
+		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin,rated:rec.rated?'Rated':'Unrated'};
+		if (state===spiel.state('inactive')) { out.player=out.white||out.black; out.pcolor=out.white?'white':'black'; out.ocolor=out.black?'white':'black';  }
 		if (all) out.messages = rec.messages;
 		return out;
 	};
 		
-	if (state==='inactive') {
+	if (state===spiel.state('inactive')) {
 		//Get all the inactive games
 		db.findGamesByFilter({state:state},format,send);
 		
@@ -265,8 +265,16 @@ io.sockets.on('connection', function (socket) {
 		if(!err && session && session.username) {
 			socket.set('username',session.username,function(){
 				
-				socket.on('join', function (data) {				
-					spiel.join(data.gameid, {session:session, socket:socket});
+				socket.on('join', function (data) {
+					spiel.join(data.gameid, {session:session, socket:socket}, function(game) {
+						if (game.state===spiel.state('inactive')) {
+							var out = { gameid:game.gameid,white:game.white.username,black:game.black.username,state:'inactive',rated:game.rated?'Rated':'Unrated' };
+							out.player=out.white||out.black; 
+							out.pcolor=out.white?'white':'black'; 
+							out.ocolor=out.black?'white':'black';
+							socket.broadcast.emit("joinadd",out);
+						}
+					});					
 				});
 				
 				socket.on('move', function (data) {

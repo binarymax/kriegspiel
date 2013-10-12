@@ -1,4 +1,8 @@
 (function(){
+
+	var _socket  = io.connect('http://'+document.domain);
+	var onehalf = $("script[data-template='half']").html();
+
  	var querystring = function(key,url){
 	  url = url || window.location.search;
 	  key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]"); 
@@ -6,8 +10,6 @@
 	  var results = regex.exec( url );
 	  return (!results)?"":decodeURIComponent(results[1].replace(/\+/g, " "));
 	};
-
-	var onehalf = $("script[data-template='half']").html();
 
 	var messages = {
 		"goodlogin": "Welcome back!",
@@ -173,6 +175,14 @@
 			} 
 		});
 	};
+	
+	var onJoinAdd = function(data) {
+		$("#inactive").render("inactive",[data]);
+	};
+
+	var onJoinRemove = function(data) {
+		$("#inactive").find("li[data-gameid='"+data.gameid+"']").remove();
+	};
 
 	//-----------------------------------------
 	// AJAXY stuff
@@ -200,5 +210,7 @@
 	setVariant();
 	setNewAccount();
 
+	_socket.on('joinadd', onJoinAdd);
+	_socket.on('joinremove', onJoinRemove);
 	
 })();
