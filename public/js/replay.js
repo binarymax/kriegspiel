@@ -31,6 +31,7 @@ var replay = (function() {
 	var getRank  = function(r){ return parseInt(r)-1; } //returns array index of rank number
 	
 	//Announces a message to the player
+	var scrollId = 0;
 	var announce = function(data,noscroll) {
 		var $list = $("#console > ul");
 		var $console = $("#console");
@@ -43,12 +44,15 @@ var replay = (function() {
 		if (data.type==="welcome" && data.username) {
 			$("#player"+data.who).text(data.username);
 		}
-		if(!noscroll) setTimeout(function(){
-			//Scroll to the bottom
-			var top = 0;
-			$list.find("li").each(function(){top+=$(this).height()+20;});
-			$console.finish().animate({scrollTop:top},500);
-		},100);
+		if(!noscroll) {
+			clearTimeout(scrollId);
+			scrollId = setTimeout(function(){
+				//Scroll to the bottom
+				var top = 0;
+				$list.find("li").each(function(){top+=$(this).outerHeight(true);});
+				$console.finish().animate({scrollTop:top},500);
+			},100);
+		}
 	};
 
 	//Clear the console and load a list of messages

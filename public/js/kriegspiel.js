@@ -95,6 +95,7 @@ var kriegspiel = (function() {
 	}
 	
 	//Announces a message to the player
+	var scrollId = 0;
 	var announce = function(data,noscroll) {
 		var $list = $("#console > ul");
 		var $console = $("#console");
@@ -113,12 +114,15 @@ var kriegspiel = (function() {
 			$("#player"+data.who).text(data.username);
 			$("#startdate").text(started);
 		}
-		if(!noscroll) setTimeout(function(){
-			//Scroll to the bottom
-			var top = 0;
-			$list.find("li").each(function(){top+=$(this).height()+20;});
-			$console.finish().animate({scrollTop:top},500);
-		},100);
+		if(!noscroll) {
+			clearTimeout(scrollId);
+			scrollId = setTimeout(function(){
+				//Scroll to the bottom
+				var top = 0;
+				$list.find("li").each(function(){top+=$(this).outerHeight(true);});
+				$console.finish().animate({scrollTop:top},500);
+			},100);
+		}
 	};
 
 	//Sends a client-side message to the console 
@@ -131,7 +135,6 @@ var kriegspiel = (function() {
 		if(!_active && !noreset) _movestate.reset();		
 		_active=true;
 		resetOptions();
-		//if (!noreset) resetOptions();
 	}
 	
 	//Deactivates player's ability to move
