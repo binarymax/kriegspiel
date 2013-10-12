@@ -3,7 +3,7 @@
 <head>
 <title>KRIEGSPIEL</title>
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-10-12T15:28:59+0100" >
+<meta name="date" content="2013-10-12T16:23:16+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -36,16 +36,29 @@
 		<article id="introduction">
 
 			<h2>You can see your pieces, but not your opponents!</h2>
-			<!--
-			<ul id="variants">
-				<li class="variant" data-for="classic"><a href="#classic"><h3>Classic Kriegspiel</h3></a></li>
-				<li class="variant" data-for="lovenheim"><a href="#lovenheim"><h3>Lovenheim Variant</h3></a></li>
-				<li class="variant" data-for="rochester"><a href="#rochester"><h3>Rochester Variant</h3></a></li>
-			</ul>
-			-->
-
 			<a href="/join?type=classic" class="playnow">Play Now!</a>
 			
+		</article>
+		
+		<br>		
+
+		<article id="rules">
+
+			<h3>How to Play</h3>
+
+			<hr>
+
+			<div class="content">
+				<div class="tip">You move like chess</div>
+				<div class="tip">Your moves are secret</div>
+				<div class="tip">Ask if there are any pawn captures</div>
+				<div class="tip">See if an adjacent square is occupied</div>
+				<div class="tip">We tell you when you capture a piece</div>
+				<div class="tip">Know about your opponents promotions</div>
+			</div>
+
+			<hr>
+		
 			<p class="content">
 				Kriegspiel (German for "War Game") is a chess variant of imperfect information.  The premise is that, like war, you can see your own position, but not that of your opponent.  You follow the rules of normal chess, and some information is given to you, but otherwise you must deduce where your opponents pieces are in order to win.  All information that is shared by the game is shared to both black and white.  There are many variations of Kriegspeil, and each variation reveals different information.  The more information you have, either directly or though deduction, the easier it is to win!
 			</p>
@@ -72,14 +85,6 @@
 			<a name="lovenheim"></a>
 			<!-- <h3>Lovenheim variant</h3> -->
 			<h3>The krgspl.com variation</h3>
-			<div class="content">
-				<div class="tip">You move like chess</div>
-				<div class="tip">We reveal illegal move squares</div>
-				<div class="tip">Ask if there are any pawn captures</div>
-				<div class="tip">See if an adjacent square is occupied</div>
-				<div class="tip">We tell you when you capture a piece</div>
-				<div class="tip">Know about your opponents promotions</div>
-			</div>
 
 			<hr>
 
@@ -96,13 +101,13 @@
 					<li>[color] has moved and has placed [color] in stalemate</li>
 					<li>[color] has attempted an illegal move to [square]</li>
 					<li>[color] has captured on [square]</li>
-					<li>[color] has captured on [square], en pessant!</li>
+					<li>[color] has captured on [square], en passant!</li>
 					<li>[color] has promoted</li>
-					<li>[square] is occupied</li>
-					<li>[square] is not occupied</li>
+					<li>[square] is occupied by [color]</li>
+					<li>[square] is not occupied by [color]</li>
 					<li>[color] has available pawn captures and must attempt one</li>
 					<li>[color] has no available pawn captures</li>
-					<li>[color] has promoted to a [piece]</li>
+					<li>[color] has promoted!</li>
 				</ul>
 			</div>
 

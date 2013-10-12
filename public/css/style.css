@@ -77,6 +77,10 @@ article .content {
 	margin-left:20px;
 }
 
+p.content {
+	line-height: 24px; font-size:16px; text-align: justify; margin-right:20px;
+}
+
 .tip {
 	display:inline-block;
 	width:48%;
