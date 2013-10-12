@@ -47,7 +47,7 @@ var replay = (function() {
 			//Scroll to the bottom
 			var top = 0;
 			$list.find("li").each(function(){top+=$(this).height()+20;});
-			$console.animate({scrollTop:top},500);
+			$console.finish().animate({scrollTop:top},500);
 		},100);
 	};
 
