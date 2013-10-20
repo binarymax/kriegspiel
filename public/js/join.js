@@ -19,7 +19,8 @@
 		"login": "Sorry, you need to login before you can do that",
 		"badid": "Sorry, that gameid was invalid",
 		"gameactive": "Sorry, that game is still in play, no peeking!",
-		"gamenotfound": "Sorry, that game could not be found"
+		"gamenotfound": "Sorry, that game could not be found",
+		"bademail": "Sorry, your username and email did not match"
 	}
 
 	//Shows a success banner 
@@ -77,6 +78,13 @@
 		}
 	};			
 	
+	//Forgot Password checked
+	var setForgot = function(e) {
+		$("#login").hide();
+		$("#forgot").show();
+		return nobubble(e);
+	}
+	
 	//Toggles if the 'create new account' box is checked
 	var newAccount = false;
 	var setNewAccount = function(e) {
@@ -132,12 +140,32 @@
 			
 			if(!doSubmit) {
 				$(errors).each(function(){ $("#formerrors").show().append("<div>"+this+"</div>"); });
-				e.stopPropagation();
-				e.preventDefault();
-				return false;
+				return nobubble(e);
 			}
 		}
 	});	
+
+	$("#forgotform").on("submit",function(e) {
+		var $login = $(this);
+		if(!$login.attr("data-override")) {
+			$("#forgoterrors").html('').hide();
+			var doSubmit=true;
+			var errors = [];
+			var username=$("#forgotuser").val();
+			var email=$("#forgotemail").val();
+			if (!username.length) {
+				errors.push('Username is missing');
+				doSubmit = false;
+			} else if (!email.length) {
+				errors.push('Password is missing');
+				doSubmit = false;
+			}
+			if(!doSubmit) {
+				$(errors).each(function(){ $("#forgoterrors").show().append("<div>"+this+"</div>"); });
+				return nobubble(e);
+			}
+		}
+	});
 
 	var loadGames = function() {
 
@@ -206,6 +234,7 @@
 	//Wireup Events
 	$("#startgame").on("click",doStartDialog);
 	$("#newaccount").on("click",setNewAccount);
+	$("#forgotpswd").on("click",setForgot);
 
 	setVariant();
 	setNewAccount();

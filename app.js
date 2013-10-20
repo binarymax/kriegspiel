@@ -88,6 +88,21 @@ app.post('/join/?', function(req,res) {
 	security.loginOrCreateUser(req,res);
 });
 
+//Forgot Password Flow
+app.get('/forgot/:code/?', file('public/forgot.html'));
+
+app.post('/forgot/:code/?', function(req,res){
+	security.resetPassword(req,res);
+});
+
+app.post('/forgot/?', function(req,res) {
+	security.forgotPassword(req,res,function(err,msg) {
+		if(!err) res.sendfile('public/forgotsent.html');
+		else res.redirect('/join?error='+err);
+	});
+});
+
+//Starts a new Game:
 app.post('/start/?', security.authenticateUser, function(req,res) {
 	var gameid = Math.floor(Math.random()*100000).toString(16);
 	var variant = 'lovenheim'; //req.body.variant;
@@ -99,10 +114,6 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 		res.redirect('/games/'+gameid);
 	});
 });
-
-//Starts up a new game
-//app.get('/start/?', security.authenticateUser, newGame);
-
 
 //Gets a list of games
 app.get('/games/?', security.authenticateUser, function(req,res) {
