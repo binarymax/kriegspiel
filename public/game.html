@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
 <head>
-<title>...KRIEGSPIEL</title>
+<title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-09-24T12:37:21+0100" >
+<meta name="date" content="2013-10-23T21:31:13+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -27,10 +27,14 @@
 <body>
 
 	<header class="game">
-		<h1><span class="faded-logo">PLAY</span></h1>
+		<h1><span class="faded-logo" id="heading">PLAY</span></h1>
 		<h2>
 			<span id="playerwhite">?</span> <span class="faded-logo">versus</span> <span id="playerblack">?</span><br>
 			<span class="faded-logo">started</span> <span id="startdate">?</span>
+		</h2>
+		<h2 style="margin-left:20px;">
+			<label class="faded-logo"><input type="checkbox" id="tutorial" checked="checked" name="tutorial">Show Tutorial</label><br>
+			<label class="faded-logo"><input type="checkbox" id="sounds" checked="checked" name="sounds">Play Sounds</label><br>
 		</h2>
 	</header>
 	
@@ -75,20 +79,130 @@
 	</footer>
 	
 	<script type="text/template" data-type="template" data-template="default">
-		<li class="{{whoclass}} {{whatclass}}" data-type="{{type}}">{{message}}</li>
+		<li class="{{whoclass}} {{whatclass}}" data-type="{{type}}">{{message}} <div class="tutorial">{{helpmessage}}</div></li>
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="offerdraw">
 		<li class="{{whoclass}} {{whatclass}}" data-type="{{type}}">{{message}}
 			<button class="messagebutton acceptdraw">Accept</button><button class="messagebutton declinedraw">Decline</button>
+			<div class="tutorial">{{helpmessage}}</div>
 		</li>
 	</script>
 
 	<script type="text/template" data-type="template" data-template="finish">
 		<li class="{{whoclass}} {{whatclass}}" data-type="{{type}}">{{message}}
 			<button class="messagebutton replay">Replay</button>
+			<div class="tutorial">{{helpmessage}}</div>
 		</li>
 	</script>
+
+	<!--
+	<script type="text/template" data-type="template" data-template="tutorial-declinedraw">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-acceptdraw">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-offerdraw">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-enpassant">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-inactive">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-finished">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-resigned">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-gameover">
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-finish">
+	</script>
+	-->
+	
+	<script type="text/template" data-type="template" data-template="tutorial-impossible">
+		When a player makes a move that is not a valid chess move, for example moving a knight like a bishop, the move is ignored and no useful data is revealed.
+	</script>
+
+	
+	<script type="text/template" data-type="template" data-template="tutorial-welcome-player">
+		Welcome to Kriegspiel!  Move your pieces just like chess.  White moves first.  The objective is to win, by deducing where your opponent&apos;s pieces are - since we do not tell you.  When it is your move, you can use the <span class="tutorial-option">Check for Pawn Captures</span> option, or the <span class="tutorial-option">Reveal Square</span> option.  You can do either only once per move. 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-welcome-opponent">
+		Your opponent has joined.  Get ready for some Kriegspiel! 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-capture-player">
+		Your opponent has captured a piece, and we have removed it from your board!  Your opponent now has a piece on that square.  Can you guess what it is? 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-capture-opponent">
+		You captured an opponent&apos;s piece!  We have removed the piece from your opponent&apos;s board.  Can you guess what piece you captured? 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-check-player">
+		You have placed your opponent in check!  Your opponent must make a move to get out of check, by either capturing the checking piece, blocking the check, or moving the King.  Try to guess where your opponent&apos;s King might be.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-check-opponent">
+		You are now in check!  You must make a move to get out of check, by either capturing the checking piece, blocking the check, or moving your King.  Good luck! 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-move-player">
+		You have moved and it is now your opponents turn to move.  We do not tell your opponent what or where you moved, only that the move took place.  It is up to your opponent to deduce where you might have moved, and try to guess the position!
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-move-opponent">
+		Your opponent has moved and it is now your move.  We do not tell you what or where your opponent moved, we only tell you that the move took place. It is up to you to deduce where your opponent might have moved, and try to guess the position!  
+	</script>
+
+
+	<script type="text/template" data-type="template" data-template="tutorial-illegal">
+		When an illegal move is made, the piece is moved back to its original square.  Both players are told that the illegal move was attempted, and which square the piece targeted.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-promoted-player">
+		You have moved a pawn to their 8th rank and promoted to a piece of your choice.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-promoted-opponent">
+		Your opponent has moved a pawn to their 8th rank and promoted to a piece of their choice.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes">
+		{{isactive}} has used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece occupied by {{inactive}} on {{square}}.  A player can only use Reveal Square once per move.	
+	</script>
+	
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesno">
+		{{isactive}} has used the <span class='tutorial-option'>Reveal Square</span> option, but {{square}} was empty.  A player can only use Reveal Square once per move.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesyes-player">
+		You have used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there is a pawn capture available.  You must now attempt to capture with a pawn at least once before you can move.	
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesyes-opponent">
+		Your opponent has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there is a pawn capture available.  Your opponent must now attempt to capture with a pawn at least once before they can move.	
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesno">
+		{{isactive}} has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there are not any pawn captures available.  When a player uses this option and a pawn capture is available, the player must attempt to capture with a pawn at least once before they can move.
+	</script>
+	
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturestry-player">	
+		You must attempt to capture with a pawn at least once before you can move.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturestry-opponent">	
+		Your opponent must attempt to capture with a pawn at least once before moving.
+	</script>
+
 
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>

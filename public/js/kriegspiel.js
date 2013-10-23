@@ -15,8 +15,10 @@ var kriegspiel = (function() {
 	var _socket  = io.connect('http://'+document.domain);
 	var _gameid  = location.href.substr(location.href.indexOf('/games/')+7);
 
-	var _active  = false; //Your turn is active or not
-	
+	var _active   = false; //Your turn is active or not
+	var _sounds   = true;  //Whether to play move sounds or not
+	var _tutorial = true;  //Whether to show tutorial messages or not
+		
 	var _color; //Your color
 	var _oppos; //Your opponents color
 	var _board; //Your board
@@ -94,18 +96,43 @@ var kriegspiel = (function() {
 		return message;		
 	}
 	
-	//Announces a message to the player
+	//Scroll the console to the bottom
 	var scrollId = 0;
+	var scroller = function() {
+		var $list = $("#console > ul");
+		var $console = $("#console");
+		clearTimeout(scrollId);
+		scrollId = setTimeout(function(){
+			//Scroll to the bottom
+			var top = 0;
+			$list.find("li").each(function(){top+=$(this).outerHeight(true);});
+			$console.finish().animate({scrollTop:top},500);
+		},100);		
+	}
+
+	//Announces a message to the player
 	var announce = function(data,noscroll) {
 		var $list = $("#console > ul");
 		var $console = $("#console");
+		var helptype1 = 'tutorial-' + (data.template||data.type);
+		var helptype2 = helptype1 + '-' + (data.who===_color?'player':'opponent'); 
 		data.whoclass = data.who+"-message";
 		data.whatclass = data.who+"-"+data.type;
+		data.helpmessage = '';
+
+		if (_templates[helptype2]) {
+			data.helpmessage = render({type:helptype2});
+		} else if (_templates[helptype1]) {
+			data.helpmessage = render({type:helptype1});
+		}
+
 		if (data.type!=="welcome" || $list.find("li."+data.whatclass).length===0) {
 			if(data.type==='offerdraw' && data.who===_color){
-				$list.append(render(data,'default'));
+				$message = $(render(data,'default'))
+				$list.append($message);
 			} else { 
-				$list.append(render(data));
+				$message = $(render(data))
+				$list.append($message);
 			}
 		}
 		if (data.type==="welcome" && data.username) {
@@ -115,13 +142,7 @@ var kriegspiel = (function() {
 			$("#startdate").text(started);
 		}
 		if(!noscroll) {
-			clearTimeout(scrollId);
-			scrollId = setTimeout(function(){
-				//Scroll to the bottom
-				var top = 0;
-				$list.find("li").each(function(){top+=$(this).outerHeight(true);});
-				$console.finish().animate({scrollTop:top},500);
-			},100);
+			scroller();
 		}
 	};
 
@@ -129,19 +150,43 @@ var kriegspiel = (function() {
 	var announceui = function(message) {
 		var data = {type:"ui",who:_color,message:message};
 	}
+	
+	var soundId = 0;
+	var playSound = function(sound) {
+		if(_sounds) {
+			sound = sound||'move';
+			$(document.body).append('<embed src="/img/'+sound+'.wav" autostart="true" width="1" height="1" id="sound' + (soundId++) +'" enablejavascript="true">');
+		}
+	};
+
+	//Fancy title thing
+	var dot = 0;
+	var dots = ['o..','.o.','..o'];
+	var dotint = 0;
+	var setTitle = function(text) { try { document.title = text + " | KRIEGSPIEL"; } catch(ex) {} };
+	var setHeading = function(text) { $("#heading").text(text); };
 
 	//Activates player's ability to move
 	var activate = function(noreset) {
-		if(!_active && !noreset) _movestate.reset();		
+		if(!_active && !noreset) _movestate.reset();
+		if(!_active && _sounds) playSound('move');		
 		_active=true;
+		clearInterval(dotint);
+		setTitle('Your Move');
+		setHeading('MOVE');
 		resetOptions();
 	}
 	
 	//Deactivates player's ability to move
 	var deactivate = function() {
+		if(_active && _sounds) playSound('move');
 		disableOption("pawncaptures");
 		disableOption("occupies");
+		setHeading('WAIT');
 		_active=false;
+		dot = 0;
+		clearInterval(dotint);
+		dotint = setInterval(function(){ setTitle(dots[dot]); dot=++dot>=dots.length?0:dot; },1250);
 	}
 
 	//Shows the option dialog and hides the options
@@ -224,6 +269,10 @@ var kriegspiel = (function() {
 
 	//-----------------------------------------
 	//Socket Events
+	var onWelcome = function (data) {
+		announce(data);
+	}	
+	
 	var onMove = function (data) {
 		announce(data); 
 		if (data.action === 'start') activate();
@@ -332,7 +381,7 @@ var kriegspiel = (function() {
 			loadmessages(data.game.messages||[]);			
 		}
 
-		if (_color===turn) activate();
+		if (_color===turn) activate(); else deactivate();
 		if (data.game) loadmovestate(data.game[turn+'state']);
 		
 	};
@@ -571,6 +620,29 @@ var kriegspiel = (function() {
 		return nobubble(e);
 	};
 
+	var doTutorial = function(e){
+		var self = $(this);
+		var label = self.parent();
+		_tutorial = self.is(":checked");
+		if (_tutorial) {
+			label.removeClass("faded-logo");
+			$("#console").addClass("tutorial"); 
+		} else {
+			label.addClass("faded-logo");
+			$("#console").removeClass("tutorial");
+		}
+		scroller(); 
+		return nobubble(e);
+	};
+
+	var doSounds = function(e){
+		var self = $(this);
+		var label = self.parent();
+		_sounds = self.is(":checked");
+		if (_sounds) label.removeClass("faded-logo"); else label.addClass("faded-logo"); 
+		return nobubble(e);
+	};
+
 	//-----------------------------------------
 	//Load the templates	
 	$("script[data-type=template]").each(function(){
@@ -579,7 +651,7 @@ var kriegspiel = (function() {
 
 	//-----------------------------------------
 	//Bind Socket Response Events	
-	_socket.on('welcome', announce);
+	_socket.on('welcome', onWelcome);
 	_socket.on('promoted', announce);
 	_socket.on('occupies', announce);
 	_socket.on('offerdraw', announce);	
@@ -618,6 +690,9 @@ var kriegspiel = (function() {
 	$("#console").on("click",".acceptdraw",doAcceptDraw);
 	$("#console").on("click",".declinedraw",doDeclineDraw);
 	$("#console").on("click",".replay",doReplay);
+
+	$("#tutorial").on("change",doTutorial).trigger("change");
+	$("#sounds").on("change",doSounds).trigger("change");
 
 	$(".promotebutton").on("click",doPromotion);
 

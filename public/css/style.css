@@ -370,6 +370,28 @@ article hr {
 	margin:5px;
 }
 
+
+#console > ul > li > .tutorial {
+	display:none;
+}
+
+#console.tutorial > ul > li > .tutorial {
+	display:block;
+	font-style: italic;
+	margin-top:5px;
+	padding-top:5px;
+}
+
+#console.tutorial > ul > li.white-message > .tutorial {
+	border-top:1px solid #333;
+}
+
+#console.tutorial > ul > li.black-message > .tutorial {
+	border-top:1px solid #fff;
+}
+
+
+
 .white-message {
 	width:75%;
 	float:left;
