@@ -96,6 +96,15 @@ var kriegspiel = (function() {
 		return message;		
 	}
 	
+	//Set/Get data from LocalStorage
+	var store = function(key,value) {
+		if (window.localStorage) {
+			if (typeof value !== 'undefined') window.localStorage.setItem(key,value);  
+			return window.localStorage.getItem(key);
+		}
+		return null;
+	}	
+	
 	//Scroll the console to the bottom
 	var scrollId = 0;
 	var scroller = function() {
@@ -121,9 +130,9 @@ var kriegspiel = (function() {
 		data.helpmessage = '';
 
 		if (_templates[helptype2]) {
-			data.helpmessage = render({type:helptype2});
+			data.helpmessage = render({type:helptype2,player:_color,opponent:_oppos});
 		} else if (_templates[helptype1]) {
-			data.helpmessage = render({type:helptype1});
+			data.helpmessage = render({type:helptype1,player:_color,opponent:_oppos});
 		}
 
 		if (data.type!=="welcome" || $list.find("li."+data.whatclass).length===0) {
@@ -150,12 +159,12 @@ var kriegspiel = (function() {
 	var announceui = function(message) {
 		var data = {type:"ui",who:_color,message:message};
 	}
-	
-	var soundId = 0;
+		
+	var sounds = (window.Audio)?{'move':new Audio("/img/move.wav")}:{};
 	var playSound = function(sound) {
-		if(_sounds) {
-			sound = sound||'move';
-			$(document.body).append('<embed src="/img/'+sound+'.wav" autostart="true" width="1" height="1" id="sound' + (soundId++) +'" enablejavascript="true">');
+		if(_sounds && window.Audio) {
+			var sound = sounds[(sound||'move')];
+			if (sound && sound.play) sound.play();
 		}
 	};
 
@@ -624,6 +633,7 @@ var kriegspiel = (function() {
 		var self = $(this);
 		var label = self.parent();
 		_tutorial = self.is(":checked");
+		store("tutorial",_tutorial);
 		if (_tutorial) {
 			label.removeClass("faded-logo");
 			$("#console").addClass("tutorial"); 
@@ -639,9 +649,22 @@ var kriegspiel = (function() {
 		var self = $(this);
 		var label = self.parent();
 		_sounds = self.is(":checked");
+		store("sounds",_sounds);
 		if (_sounds) label.removeClass("faded-logo"); else label.addClass("faded-logo"); 
 		return nobubble(e);
 	};
+
+	$.fn.initFlag = function(key) {
+		var jq = this;
+		var flag = (store(key)||'').toString();
+		switch (flag) {
+			case 'true': jq.attr("checked","checked").val("checked"); break;
+			case 'false': jq.removeAttr("checked").val(""); break;
+		}
+
+		jq.trigger("change");
+		return jq;
+	}
 
 	//-----------------------------------------
 	//Load the templates	
@@ -691,8 +714,8 @@ var kriegspiel = (function() {
 	$("#console").on("click",".declinedraw",doDeclineDraw);
 	$("#console").on("click",".replay",doReplay);
 
-	$("#tutorial").on("change",doTutorial).trigger("change");
-	$("#sounds").on("change",doSounds).trigger("change");
+	$("#tutorial").on("change",doTutorial).initFlag("tutorial");
+	$("#sounds").on("change",doSounds).initFlag("sounds");
 
 	$(".promotebutton").on("click",doPromotion);
 

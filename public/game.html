@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-10-23T21:31:13+0100" >
+<meta name="date" content="2013-10-25T11:29:38+0100" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -106,9 +106,6 @@
 	<script type="text/template" data-type="template" data-template="tutorial-offerdraw">
 	</script>
 
-	<script type="text/template" data-type="template" data-template="tutorial-enpassant">
-	</script>
-
 	<script type="text/template" data-type="template" data-template="tutorial-inactive">
 	</script>
 
@@ -128,14 +125,13 @@
 	<script type="text/template" data-type="template" data-template="tutorial-impossible">
 		When a player makes a move that is not a valid chess move, for example moving a knight like a bishop, the move is ignored and no useful data is revealed.
 	</script>
-
 	
 	<script type="text/template" data-type="template" data-template="tutorial-welcome-player">
-		Welcome to Kriegspiel!  Move your pieces just like chess.  White moves first.  The objective is to win, by deducing where your opponent&apos;s pieces are - since we do not tell you.  When it is your move, you can use the <span class="tutorial-option">Check for Pawn Captures</span> option, or the <span class="tutorial-option">Reveal Square</span> option.  You can do either only once per move. 
+		Welcome to Kriegspiel!  Move your pieces just like chess.  White moves first.  The objective is to win by deducing where {{opponent}}&apos;s pieces are - since we do not tell you.  When it is your move, you can use the <span class="tutorial-option">Check for Pawn Captures</span> option, or the <span class="tutorial-option">Reveal Square</span> option.  You can do either only once per move. 
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-welcome-opponent">
-		Your opponent has joined.  Get ready for some Kriegspiel! 
+		Your opponent has joined.  Get ready for some Kriegspiel!{{move}} 
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-capture-player">
@@ -144,6 +140,14 @@
 
 	<script type="text/template" data-type="template" data-template="tutorial-capture-opponent">
 		You captured an opponent&apos;s piece!  We have removed the piece from your opponent&apos;s board.  Can you guess what piece you captured? 
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-enpassant-player">
+		Your opponent has captured a pawn with en passant!  We have removed the pawn from your board, and your opponent now has a pawn on your 3rd rank and the same file.  Try dragging one of your opponent&apos;s pawns to that square to remember that it is there.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-enpassant-opponent">
+		You captured a pawn with en passant!  We have removed the pawn from your opponent&apos;s board.
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-check-player">
@@ -159,28 +163,35 @@
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-move-opponent">
-		Your opponent has moved and it is now your move.  We do not tell you what or where your opponent moved, we only tell you that the move took place. It is up to you to deduce where your opponent might have moved, and try to guess the position!  
+		Your opponent has moved and it is now your move.  We do not tell you what or where {{opponent}} moved, we only tell you that the move took place. It is up to you to deduce where {{opponent}} might have moved, and try to guess the position!  Try dragging {{opponent}}&apos;s pieces around to keep record of the position.  
 	</script>
-
 
 	<script type="text/template" data-type="template" data-template="tutorial-illegal">
 		When an illegal move is made, the piece is moved back to its original square.  Both players are told that the illegal move was attempted, and which square the piece targeted.
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-promoted-player">
-		You have moved a pawn to their 8th rank and promoted to a piece of your choice.
+		Congratulations! You have moved a pawn to your 8th rank and promoted to a piece of your choice.
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-promoted-opponent">
 		Your opponent has moved a pawn to their 8th rank and promoted to a piece of their choice.
 	</script>
 
-	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes">
-		{{isactive}} has used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece occupied by {{inactive}} on {{square}}.  A player can only use Reveal Square once per move.	
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes-player">
+		You have used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece!  You must guess what the piece might be, try dragging one of your opponents pieces to the square to save your guess.  You cannot use Revel Square again until your next move. 	
 	</script>
 	
-	<script type="text/template" data-type="template" data-template="tutorial-occupiesno">
-		{{isactive}} has used the <span class='tutorial-option'>Reveal Square</span> option, but {{square}} was empty.  A player can only use Reveal Square once per move.
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes-opponent">
+		Your opponent has used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece!  Your opponent must guess what the piece might be, and cannot use Revel Square again this move. 	
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesno-player">
+		You have used the <span class='tutorial-option'>Reveal Square</span> option, and the square was empty.  You cannot use Revel Square again until your next move.
+	</script>
+
+	<script type="text/template" data-type="template" data-template="tutorial-occupiesno-opponent">
+		You have used the <span class='tutorial-option'>Reveal Square</span> option, and the square was empty, and cannot use Revel Square again this move.
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesyes-player">
@@ -191,10 +202,15 @@
 		Your opponent has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there is a pawn capture available.  Your opponent must now attempt to capture with a pawn at least once before they can move.	
 	</script>
 
-	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesno">
-		{{isactive}} has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there are not any pawn captures available.  When a player uses this option and a pawn capture is available, the player must attempt to capture with a pawn at least once before they can move.
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesno-player">
+		You has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there are not any pawn captures available.  You cannot check for pawn captures again until your next move.
 	</script>
 	
+	<script type="text/template" data-type="template" data-template="tutorial-pawncapturesno-opponent">
+		Your opponent has used the <span class='tutorial-option'>Check for Pawn Captures</span> option, and there are not any pawn captures available.
+	</script>
+
+
 	<script type="text/template" data-type="template" data-template="tutorial-pawncapturestry-player">	
 		You must attempt to capture with a pawn at least once before you can move.
 	</script>
