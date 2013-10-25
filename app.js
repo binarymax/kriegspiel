@@ -199,6 +199,23 @@ app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	}
 });
 
+//Gets all game replays
+app.get('/replays/?',function(req,res){
+
+	//Sends the result
+	var send = function(err,records){ if(err) res.send(500,err); else res.send(200,records); };
+
+	var format = function(rec) { 
+		//Formats a game record for listing (hide secret opponent stuff)
+		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
+		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin,rated:rec.rated?'Rated':'Unrated'};
+		return out;
+	};
+
+	db.findGamesByFilter({state:spiel.state('finished')},format,send);
+});
+
+
 //Gets a game replay
 app.get('/replays/:gameid',function(req,res){
 	var gameid = req.params.gameid;
