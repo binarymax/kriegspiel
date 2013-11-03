@@ -628,6 +628,15 @@ var kriegspiel = (function() {
 		location.href = "/replays/"+_gameid;
 		return nobubble(e);
 	};
+	
+	var doChat = function(e){
+		$text = $("#chattext");
+		if ($text.val().length>0) {
+			_socket.emit('chat',{gameid:_gameid,text:$text.val()});
+			$text.val('');
+		}
+		return nobubble(e);
+	}
 
 	var doTutorial = function(e){
 		var self = $(this);
@@ -693,6 +702,7 @@ var kriegspiel = (function() {
 	_socket.on('capture', onCapture);
 	_socket.on('finish', onFinish);
 	_socket.on('check', announce);
+	_socket.on('chat', announce);
 	_socket.on('move', onMove);
 		
 	//-----------------------------------------
@@ -720,6 +730,8 @@ var kriegspiel = (function() {
 	$(".promotebutton").on("click",doPromotion);
 
 	$("#board").on("click",".highlight-occupies",doOccupiesSquare);
+
+	$("#chatform").on("submit",doChat);
 
 	//-----------------------------------------
 	//Trigger Socket Request Event to join the game

@@ -390,8 +390,6 @@ article hr {
 	border-top:1px solid #fff;
 }
 
-
-
 .white-message {
 	width:75%;
 	float:left;
@@ -436,6 +434,10 @@ article hr {
 
 .highlight-occupies:hover {
 	background-color:rgba(255,0,0,0.5);
+}
+
+#options {
+	width:965px;
 }
 
 .option {
@@ -486,6 +488,16 @@ article hr {
 	background: -ms-linear-gradient(top,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* IE10+ */
 	background: linear-gradient(to bottom,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f6f6', endColorstr='#f5f6f6',GradientType=0 ); /* IE6-9 */
+}
+
+.chat {
+	float:right;
+	margin-top:10px;
+}
+
+#chattext {
+	width:245px;
+	border:1px solid #ccc;
 }
 
 

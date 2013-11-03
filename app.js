@@ -294,7 +294,7 @@ io.sockets.on('connection', function (socket) {
 			socket.set('username',session.username,function(){
 				
 				socket.on('join', function (data) {
-					spiel.join(data.gameid, {session:session, socket:socket}, function(game) {
+					if(data.gameid) spiel.join(data.gameid, {session:session, socket:socket}, function(game) {
 						if (game.state===spiel.state('inactive')) {
 							var out = { gameid:game.gameid,white:game.white.username,black:game.black.username,state:'inactive',rated:game.rated?'Rated':'Unrated' };
 							out.player=out.white||out.black; 
@@ -306,31 +306,35 @@ io.sockets.on('connection', function (socket) {
 				});
 				
 				socket.on('move', function (data) {
-					spiel.move(data.gameid, data.source, data.target, data.scratch, data.promotion, {session:session, socket:socket});		
+					if(data.gameid) spiel.move(data.gameid, data.source, data.target, data.scratch, data.promotion, {session:session, socket:socket});		
 				});
 				
+				socket.on('chat', function (data) {
+					if(data.gameid) spiel.chat(data.gameid, data.text, {session:session, socket:socket});		
+				});
+
 				socket.on('pawncaptures', function (data) {
-					spiel.pawncaptures(data.gameid, {session:session, socket:socket});		
+					if(data.gameid) spiel.pawncaptures(data.gameid, {session:session, socket:socket});		
 				});
 
 				socket.on('occupies', function (data) {
-					spiel.occupies(data.gameid, data.target, {session:session, socket:socket});		
+					if(data.gameid) spiel.occupies(data.gameid, data.target, {session:session, socket:socket});		
 				});
 
 				socket.on('resign', function (data) {
-					spiel.resign(data.gameid, {session:session, socket:socket});		
+					if(data.gameid) spiel.resign(data.gameid, {session:session, socket:socket});		
 				});
 
 				socket.on('offerdraw', function (data) {
-					spiel.offerdraw(data.gameid, {session:session, socket:socket});		
+					if(data.gameid) spiel.offerdraw(data.gameid, {session:session, socket:socket});		
 				});
 
 				socket.on('acceptdraw', function (data) {
-					spiel.acceptdraw(data.gameid, {session:session, socket:socket});		
+					if(data.gameid) spiel.acceptdraw(data.gameid, {session:session, socket:socket});		
 				});
 
 				socket.on('declinedraw', function (data) {
-					spiel.declinedraw(data.gameid, {session:session, socket:socket});		
+					if(data.gameid) spiel.declinedraw(data.gameid, {session:session, socket:socket});		
 				});
 
 			});

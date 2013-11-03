@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-10-25T11:29:38+0100" >
+<meta name="date" content="2013-11-03T09:12:23+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -50,6 +50,7 @@
 			<button id="occupies" class="option disabled" disabled="disabled">Reveal Square</button>
 			<button id="offerdraw" class="option disabled" disabled="disabled">Offer Draw</button>
 			<button id="resign" class="option disabled" disabled="disabled">Resign</button>
+			<div class="chat"><form id="chatform"><input type="text" id="chattext" size="27"><input type="submit" name="submit" value="Send"></form></div>
 		</div>
 		
 		<div id="pawncapturesdialog" class="dialog">
@@ -131,7 +132,7 @@
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-welcome-opponent">
-		Your opponent has joined.  Get ready for some Kriegspiel!{{move}} 
+		Your opponent has joined.  Get ready for some Kriegspiel! 
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-capture-player">
@@ -179,7 +180,7 @@
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes-player">
-		You have used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece!  You must guess what the piece might be, try dragging one of your opponents pieces to the square to save your guess.  You cannot use Revel Square again until your next move. 	
+		You have used the <span class='tutorial-option'>Reveal Square</span> option, and found a piece!  You must guess what the piece might be, try dragging one of your opponents pieces to the square to save your guess.  You cannot use Reveal Square again until your next move. 	
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="tutorial-occupiesyes-opponent">
