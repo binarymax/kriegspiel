@@ -108,6 +108,15 @@ header.replay {
 	border-bottom:2px solid #333; 
 }
 
+.headerlink {
+	color:#CCC;
+}
+
+.headerlink:hover {
+	color:#606060;
+}
+
+
 footer.home {
 	width:100%;
 	border-top:2px solid #333;

@@ -127,7 +127,17 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 	var format = function(rec) { 
 		//Formats a game record for listing (hide secret opponent stuff)
 		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
-		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin,rated:rec.rated?'Rated':'Unrated'};
+		var out = {gameid:rec.gameid,
+			white:rec.whiteusername,
+			black:rec.blackusername,
+			state:spiel.state(rec.state),
+			turn:rec.turn,
+			moves:rec.moves,
+			result:fin,
+			rated:rec.rated?'Rated':'Unrated',
+			startdate:rec.startdate,
+			enddate:rec.enddate?rec.enddate.toDateString():''
+		};
 		if (state===spiel.state('inactive')) { out.player=out.white||out.black; out.pcolor=out.white?'white':'black'; out.ocolor=out.black?'white':'black';  }
 		if (all) out.messages = rec.messages;
 		return out;
@@ -208,7 +218,18 @@ app.get('/replays/?',function(req,res){
 	var format = function(rec) { 
 		//Formats a game record for listing (hide secret opponent stuff)
 		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
-		var out = {gameid:rec.gameid,white:rec.whiteusername,black:rec.blackusername,state:spiel.state(rec.state),turn:rec.turn,moves:rec.history.length/2,result:fin,rated:rec.rated?'Rated':'Unrated'};
+		var out = {
+			gameid:rec.gameid,
+			white:rec.whiteusername,
+			black:rec.blackusername,
+			state:spiel.state(rec.state),
+			turn:rec.turn,
+			moves:rec.moves,
+			result:fin,
+			rated:rec.rated?'Rated':'Unrated',
+			startdate:rec.startdate,
+			enddate:rec.enddate?rec.enddate.toDateString():''
+		};
 		return out;
 	};
 
@@ -301,6 +322,8 @@ io.sockets.on('connection', function (socket) {
 							out.pcolor=out.white?'white':'black'; 
 							out.ocolor=out.black?'white':'black';
 							socket.broadcast.emit("joinadd",out);
+						} else {
+							socket.broadcast.emit("joinremove",{ gameid:game.gameid });
 						}
 					});					
 				});
@@ -335,6 +358,10 @@ io.sockets.on('connection', function (socket) {
 
 				socket.on('declinedraw', function (data) {
 					if(data.gameid) spiel.declinedraw(data.gameid, {session:session, socket:socket});		
+				});
+				
+				socket.on('ping', function (data) {
+					if(data.gameid) spiel.ping(data.gameid, {session:session, socket:socket});		
 				});
 
 			});

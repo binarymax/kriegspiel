@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-10-25T12:41:34+0100" >
+<meta name="date" content="2013-11-06T08:51:27+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -44,7 +44,7 @@
 					</div>
 					<div id="account" class="content">
 						<div id="formerrors" class="hidden"></div>
-						<label><input type="text" name="username" id="username" /> username <span id="newusername"></span></label><br />
+						<label><input type="text" name="username" id="username" maxlength="24" /> username <span id="newusername"></span></label><br />
 						<label><input type="password" name="password1" id="password1" /> password</label><br />
 						<div id="newfields" class="hidden">				
 							<label><input type="password" name="password2" id="password2" /> password (retype)</label><br />
@@ -139,7 +139,7 @@
 	</script>
 
 	<script type="text/template" data-type="template" data-template="finished">
-		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}}, {{moves}} moves, result: {{result}} <a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
+		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}} ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
 	</script>
 
 	<script type="text/template" data-type="template" data-template="noresults">
