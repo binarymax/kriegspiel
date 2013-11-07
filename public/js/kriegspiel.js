@@ -439,7 +439,7 @@ var kriegspiel = (function() {
 			showDialog("promote");
 			$("#promotiondialog").attr("data-target",target);
 			return true;
-		} else if(target.charAt(1)==='1') {
+		} else if(_color==='black' && tr===1) {
 			if(sr!==2 || Math.abs(sf-tf)>1) return 'impossible';
 			showDialog("promote");
 			$("#promotiondialog").attr("data-target",target);
@@ -482,6 +482,7 @@ var kriegspiel = (function() {
 		} else if (promotion = checkPromotion(source,target,piece)) {
 			if(promotion === 'impossible') return 'snapback'; //naughty!
 			//Promotion OK! Cache the drop event:
+			_temp = oldPos;
 			_promotion = {source:source, target:target, piece:piece, newPos:newPos, oldPos:oldPos, orientation:orientation};
 		} else {
 			//Attempt a move
