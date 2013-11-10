@@ -570,3 +570,5 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 
 .social-left  { display:inline-block; margin-left:20px; margin-top:10px;}
 .social-right { display:inline-block; margin-top:10px; float:right;}
+
+.spielercolumn { text-align:center; }

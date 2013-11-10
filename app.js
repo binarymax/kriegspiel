@@ -69,6 +69,59 @@ var joinGame = function(req,res,gameid) {
 //Shortcut file sender
 var file = function(filename) { return function(req,res){ res.sendfile(filename); }};
 
+
+//Sends the result of a merge or db response
+var sender = function(res) {
+	return function(err,records){
+		if(err) res.send(500,err); else res.send(200,records); 
+	};
+}
+
+//Merges the two color results
+var merger = function(total,res) {
+	var output = [], count = 0;
+	return function(err,records) {
+		output = output.concat(records);
+		if (++count===total) {
+			sender(res)(null,output);
+		} 
+	};
+}
+
+//Formats a player record for listing
+var formatspieler = function(rec) {  
+	rec.rating = Math.floor(rec.rating); 
+	rec.joined = (new Date(rec.joined||'10/10/2013')).toDateString().substr(3); 
+	return rec; 
+}
+
+//Formats a game record for listing (hide secret opponent stuff)
+var formatgame = function(rec) { 
+	
+	var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
+
+	var out = {
+		gameid:rec.gameid,
+		white:rec.whiteusername,
+		black:rec.blackusername,
+		state:spiel.state(rec.state),
+		turn:rec.turn,
+		moves:rec.moves,
+		result:fin,
+		rated:rec.rated?'Rated':'Unrated',
+		startdate:rec.startdate,
+		enddate:rec.enddate?rec.enddate.toDateString():''
+	};
+
+	if (rec.state===spiel.state('inactive')) { 
+		out.player=out.white||out.black; 
+		out.pcolor=out.white?'white':'black'; 
+		out.ocolor=out.black?'white':'black';  
+	}
+
+	return out;
+};
+
 //-------------------------------------------
 //Routes
 app.get('/', file('public/index.html'));
@@ -119,48 +172,21 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 app.get('/games/?', security.authenticateUser, function(req,res) {
  
 	var state  = spiel.state(req.query.state||'active');
-	var all = req.query.all?true:false;
-
-	//Sends the result
-	var send = function(err,records){ if(err) res.send(500,err); else res.send(200,records); };
-
-	var format = function(rec) { 
-		//Formats a game record for listing (hide secret opponent stuff)
-		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
-		var out = {gameid:rec.gameid,
-			white:rec.whiteusername,
-			black:rec.blackusername,
-			state:spiel.state(rec.state),
-			turn:rec.turn,
-			moves:rec.moves,
-			result:fin,
-			rated:rec.rated?'Rated':'Unrated',
-			startdate:rec.startdate,
-			enddate:rec.enddate?rec.enddate.toDateString():''
-		};
-		if (state===spiel.state('inactive')) { out.player=out.white||out.black; out.pcolor=out.white?'white':'black'; out.ocolor=out.black?'white':'black';  }
-		if (all) out.messages = rec.messages;
-		return out;
-	};
 		
 	if (state===spiel.state('inactive')) {
 		//Get all the inactive games
-		db.findGamesByFilter({state:state},format,send);
+		db.findGamesByFilter({state:state},formatgame,sender(res));
 		
 	} else if (req && req.session && req.session.username) {
 		//Get the user's games (both as black and white)
 		var username = req.session.username;
-		var output = [];
-		var count = 0;
-		
-		//Merges the two color results
-		var merge = function(err,records) { output = output.concat(records); if (++count===2) send(null,output); }
+		var merge = merger(2,res);
 		
 		//Get the user's games as white
-		db.findGamesByFilter({state:state,whiteusername:username},format,merge);
+		db.findGamesByFilter({state:state,whiteusername:username},formatgame,merge);
 		
 		//Get the user's games as black
-		db.findGamesByFilter({state:state,blackusername:username},format,merge);
+		db.findGamesByFilter({state:state,blackusername:username},formatgame,merge);
 
 	} else {
 		//No session, No data for you!
@@ -209,39 +235,45 @@ app.get('/games/:gameid',security.authenticateUser,function(req,res){
 	}
 });
 
-//Gets all game replays
+//Gets game replays
 app.get('/replays/?',function(req,res){
 
-	//Sends the result
-	var send = function(err,records){ if(err) res.send(500,err); else res.send(200,records); };
+	if (req.query.username) {
+		//Only get finished games for a specific username
+		var username = req.query.username;
 
-	var format = function(rec) { 
-		//Formats a game record for listing (hide secret opponent stuff)
-		var fin = (typeof rec.result === 'object' && rec.result.type) ? (rec.result.white + '-' + rec.result.black) : "";
-		var out = {
-			gameid:rec.gameid,
-			white:rec.whiteusername,
-			black:rec.blackusername,
-			state:spiel.state(rec.state),
-			turn:rec.turn,
-			moves:rec.moves,
-			result:fin,
-			rated:rec.rated?'Rated':'Unrated',
-			startdate:rec.startdate,
-			enddate:rec.enddate?rec.enddate.toDateString():''
-		};
-		return out;
-	};
+		var merge = merger(2,res);	
+		
+		//Get the user's games as white
+		db.findGamesByFilter({state:spiel.state('finished'),whiteusername:username},formatgame,merge);
+		
+		//Get the user's games as black
+		db.findGamesByFilter({state:spiel.state('finished'),blackusername:username},formatgame,merge);
 
-	db.findGamesByFilter({state:spiel.state('finished')},format,send);
+	} else { 
+
+		//Gets all the finished games:
+		db.findGamesByFilter({state:spiel.state('finished')},formatgame,sender(res));
+	}
+	
 });
 
+//Gets all game replays
+app.get('/spielers/:username',file('public/spieler.html'));
+
+//Gets player info
+app.get('/spielers/?',function(req,res){
+	var filter = {};
+	if(req.query.username) filter.username=req.query.username;
+	db.findUsersByFilter(filter,formatspieler,sender(res));
+});
 
 //Gets a game replay
 app.get('/replays/:gameid',function(req,res){
 	var gameid = req.params.gameid;
 	if (okId(gameid)) {
 		spiel.find(gameid,function(game){
+			console.log(game.state,spiel.state('finished'));
 			if(game.state === spiel.state('finished')) {
 				res.sendfile('public/replay.html');
 			} else if (game.white.username || game.black.username) {

@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
 <head>
-<title>Replays - KRIEGSPIEL</title>
+<title>Spielers - KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-10T14:19:23+0000" >
+<meta name="date" content="2013-11-10T20:08:00+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -27,7 +27,7 @@
 
 	<header class="home">
 		<h1>KR<span class="faded-logo">IE</span>GSP<span class="faded-logo">IE</span>L</h1>
-		<h2>All Completed Games!</h2>
+		<h2>The Spielers!</h2>
 	</header>
 	
 	<div class="alerts"></div>
@@ -36,8 +36,7 @@
 	
 	<section class="middle">
 			
-			<article id="finishedgroup">
-				<ul id="finished" class="content"></ul>
+			<article id="spielers">
 			</article>
 
 	</section>
@@ -50,18 +49,33 @@
 		</div>
 	</footer>	
 	
-	<script type="text/template" data-type="template" data-template="finished">
-		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}} ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
-	</script>
-
-	<script type="text/template" data-type="template" data-template="noresults">
-		<li class="noresults">You do not have any {{type}} games available.</li>
+	<script type="text/template" data-type="template" data-template="spieler">
+		<article class="finished">
+			<h3><a href="/spielers/{{username}}">{{username}} ({{rating}})</a></h3>
+			<table id="spielers" style="width:100%">
+				<thead>
+					<th width="20%">Played</th>
+					<th width="20%">Won</th>
+					<th width="20%">Lost</th>
+					<th width="20%">Drawn</th>
+					<th width="20%">Joined</th>
+				</thead>
+				<tr>
+					<td class="spielercolumn">{{rated}}</td>
+					<td class="spielercolumn">{{rwon}} ({{rwonpct}}%)</td>
+					<td class="spielercolumn">{{rlost}} ({{rlostpct}}%)</td>
+					<td class="spielercolumn">{{rdrawn}} ({{rdrawnpct}}%)</td>
+					<td class="spielercolumn">{{joined}}</td>
+				</tr>
+			</table>
+		</article>
+		<br>
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="half">½</script>
 
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="/js/replays.js"></script> 	
+	<script type="text/javascript" src="/js/spielers.js"></script> 	
 	
 	<script type="text/javascript" >
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

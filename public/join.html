@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-06T08:51:27+0000" >
+<meta name="date" content="2013-11-10T20:13:48+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -115,7 +115,7 @@
 				<article id="finishedgroup">
 					<h3>Your completed Games</h3>
 					<ul id="finished" class="content"></ul>
-					<center><a href="/replays.html" class="">Show all completed Games</a></center>
+					<center><a href="/replays.html" class="">Show all completed Games</a> | <a href="/spielers.html" class="">Show all players</a></center>
 				</article>
 
 			</div>
@@ -131,7 +131,7 @@
 	</footer>	
 	
 	<script type="text/template" data-type="template" data-template="inactive">
-		<li class="waiting" data-gameid="{{gameid}}">{{player}}({{pcolor}}) is waiting for an opponent({{ocolor}}) ({{rated}})<a href="/games/{{gameid}}" class="right join">Join!</a></li>	
+		<li class="waiting" data-gameid="{{gameid}}">{{player}}({{pcolor}})<br>Is waiting for an opponent ({{ocolor}}) ({{rated}})<a href="/games/{{gameid}}" class="right join">Join!</a></li>	
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="active">
