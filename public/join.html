@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-10T20:13:48+0000" >
+<meta name="date" content="2013-11-13T10:51:23+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -12,7 +12,7 @@
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
 <meta name="canonical" content="http://krgspl.com">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width">
 <meta property="og:image" content="http://krgspl.com/img/chesspieces/wikipedia/bK.png"/>	
 <meta property="og:title" content="KRIEGSPIEL"/>
 <meta property="og:type" content="website"/>
@@ -37,8 +37,9 @@
 	<section class="middle">
 
 			<article id="login" class="hidden">
-					<form method="POST" action="/join" id="loginform">
 					<h3>Login or Create an Account</h3>
+					<br>
+					<form method="POST" action="/join" id="loginform">
 					<div class="action right">
 						<input type="submit" id="submit" name="submit" value="Login">
 					</div>
@@ -61,8 +62,9 @@
 			</article>
 
 			<article id="forgot" class="hidden">
-					<form method="POST" action="/forgot" id="forgotform">
 					<h3>Request a Password Reset</h3>
+					<br>
+					<form method="POST" action="/forgot" id="forgotform">
 					<div class="action right">
 						<input type="submit" id="submit" name="submit" value="Reset">
 					</div>
@@ -70,10 +72,13 @@
 						<div id="forgoterrors" class="hidden"></div>
 						<label><input type="text" name="forgotuser" id="forgotuser" /> username</label><br />
 						<label><input type="text" name="forgotemail" /> email</label><br />
-						
+						<label id="forgotpswd2"><input type="checkbox" name="forgotpswd2" checked="checked"/> Forgot your Password?</label> <br />
+				
 						<br />
+
 					</div>
 					</form>
+
 			</article>
 
 
@@ -90,8 +95,8 @@
 					<h3>Start a New Game</h3>
 					<form method="POST" action="/start" id="startform">
 						<!-- <label class="selection"><input type="radio" name="variant" value="classic" />Classic</label> <label class="selection"><input type="radio" name="variant" value="lovenheim" checked="checked" />Lovenheim</label> <label class="selection"><input type="radio" name="variant" value="rochester" />Rochester</label><br> -->
-						<label class="selection"><input type="radio" name="startcolor" value="white" checked="checked" />As White</label> <label class="selection"><input type="radio" name="startcolor" value="black" />As Black</label> <label class="selection"><input type="radio" name="startcolor" value="random" />Random</label><br>
-						<label class="selection"><input type="radio" name="ratedgame" value="rated" checked="checked" />Rated</label> <label class="selection"><input type="radio" name="ratedgame" value="unrated" />Unrated</label><br>
+						<label class="selection"><input type="radio" name="startcolor" value="white" />As White</label> <label class="selection"><input type="radio" name="startcolor" value="black" />As Black</label> <label class="selection"><input type="radio" name="startcolor" value="random" checked="checked" />Random</label><br>
+						<!-- <label class="selection"><input type="radio" name="ratedgame" value="rated" checked="checked" />Rated</label> <label class="selection"><input type="radio" name="ratedgame" value="unrated" />Unrated</label><br> -->
 						<input type="submit" name="submit" value="Start!" class="join">
 					</form>
 				</article>
@@ -131,15 +136,15 @@
 	</footer>	
 	
 	<script type="text/template" data-type="template" data-template="inactive">
-		<li class="waiting" data-gameid="{{gameid}}">{{player}}({{pcolor}})<br>Is waiting for an opponent ({{ocolor}}) ({{rated}})<a href="/games/{{gameid}}" class="right join">Join!</a></li>	
+		<li class="waiting" data-gameid="{{gameid}}"><span class="spieler" data-spieler="{{player}}">{{player}}</span>({{pcolor}})<br>Is waiting for an opponent ({{ocolor}}) ({{rated}})<a href="/games/{{gameid}}" class="right join">Join!</a></li>	
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="active">
-		<li class="happening">{{white}} vs {{black}}, move {{moves}}  <a href="/games/{{gameid}}" class="right join">Play!</a></li>	
+		<li class="happening"><span class="spieler" data-spieler="{{white}}">{{white}}</span> vs <span class="spieler" data-spieler="{{black}}">{{black}}</span>, move {{moves}}  <a href="/games/{{gameid}}" class="right join">Play!</a></li>	
 	</script>
 
 	<script type="text/template" data-type="template" data-template="finished">
-		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}} ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
+		<li class="finished" data-gameid="{{gameid}}"><span class="spieler" data-spieler="{{white}}">{{white}}</span> vs <span class="spieler" data-spieler="{{black}}">{{black}}</span> ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
 	</script>
 
 	<script type="text/template" data-type="template" data-template="noresults">
@@ -150,6 +155,7 @@
 
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/js/lobby.js"></script> 	
 	<script type="text/javascript" src="/js/join.js"></script> 	
 	
 	<script type="text/javascript" >

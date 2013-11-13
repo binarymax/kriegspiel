@@ -218,6 +218,7 @@ var replay = (function() {
 		} else {
 			errorGame();
 		}
+		kriegspiel.lobby.init();
 	});
 
 })();

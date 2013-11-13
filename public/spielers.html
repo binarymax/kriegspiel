@@ -4,7 +4,7 @@
 <title>Spielers - KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-10T20:08:00+0000" >
+<meta name="date" content="2013-11-13T12:09:39+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -12,7 +12,7 @@
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
 <meta name="canonical" content="http://krgspl.com">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width">
 <meta property="og:image" content="http://krgspl.com/img/chesspieces/wikipedia/bK.png"/>	
 <meta property="og:title" content="KRIEGSPIEL"/>
 <meta property="og:type" content="website"/>
@@ -26,7 +26,7 @@
 <body class="home">
 
 	<header class="home">
-		<h1>KR<span class="faded-logo">IE</span>GSP<span class="faded-logo">IE</span>L</h1>
+		<h1><a href="/join" class="logolink">KR<span class="faded-logo">IE</span>GSP<span class="faded-logo">IE</span>L</a></h1>
 		<h2>The Spielers!</h2>
 	</header>
 	
@@ -51,21 +51,28 @@
 	
 	<script type="text/template" data-type="template" data-template="spieler">
 		<article class="finished">
-			<h3><a href="/spielers/{{username}}">{{username}} ({{rating}})</a></h3>
+			<h3><a href="/spielers/{{username}}" class="spieler" data-spieler="{{username}}">{{username}}</a> ({{rating}}) - joined {{joined}}</h3>
 			<table id="spielers" style="width:100%">
 				<thead>
+					<th width="20%">Games</th>
 					<th width="20%">Played</th>
 					<th width="20%">Won</th>
 					<th width="20%">Lost</th>
 					<th width="20%">Drawn</th>
-					<th width="20%">Joined</th>
 				</thead>
 				<tr>
+					<td class="spielercolumn">Rated</td>
 					<td class="spielercolumn">{{rated}}</td>
 					<td class="spielercolumn">{{rwon}} ({{rwonpct}}%)</td>
 					<td class="spielercolumn">{{rlost}} ({{rlostpct}}%)</td>
 					<td class="spielercolumn">{{rdrawn}} ({{rdrawnpct}}%)</td>
-					<td class="spielercolumn">{{joined}}</td>
+				</tr>
+				<tr>
+					<td class="spielercolumn">All</td>
+					<td class="spielercolumn">{{played}}</td>
+					<td class="spielercolumn">{{won}} ({{wonpct}}%)</td>
+					<td class="spielercolumn">{{lost}} ({{lostpct}}%)</td>
+					<td class="spielercolumn">{{drawn}} ({{drawnpct}}%)</td>
 				</tr>
 			</table>
 		</article>
@@ -75,6 +82,8 @@
 	<script type="text/template" data-type="template" data-template="half">½</script>
 
 	<script type="text/javascript" src="http://static.krgspl.com/krgspl/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/js/lobby.js"></script> 	
 	<script type="text/javascript" src="/js/spielers.js"></script> 	
 	
 	<script type="text/javascript" >

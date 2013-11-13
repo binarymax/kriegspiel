@@ -19,11 +19,11 @@ var express = require('express')
   , db = require('./lib/db')
   , security = require('./lib/security')
   , spiel = require('./lib/spiel')
-  , variants = require('./lib/variants').load();
+  , variants = require('./lib/variants').load()
+  , cache = require('./lib/cache')
+  , online = [];
   
-
 var app = express();
-
 
 app.configure(function() {
 	// all environments
@@ -41,7 +41,18 @@ app.configure(function() {
 
 	//Setup rethinkdb connection
 	db.setup();
-	
+		
+	//Get who's online
+	cache.get('online',-1,function(records,err){
+		online = records||[];
+		for(var key in online) {
+			if (online.hasOwnProperty(key) && key.indexOf('_timeout')>-1 && online[key]) {
+				var username = key.substr(0,key.indexOf('_timeout'));
+				delete online[username];
+			}
+		}
+	});
+
 	// development only
 	if ('development' == app.get('env')) {
 	  app.use(express.errorHandler());
@@ -123,7 +134,7 @@ var formatgame = function(rec) {
 };
 
 //-------------------------------------------
-//Routes
+// Routes
 app.get('/', file('public/index.html'));
 
 app.get('/join/?', file('public/join.html'));
@@ -161,11 +172,12 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 	var variant = 'lovenheim'; //req.body.variant;
 	var color   = req.body.startcolor;
 	var player  = req.session.username;
-	var rated   = req.body.ratedgame === 'rated' ? true : false;
+	var rated   = true; //req.body.ratedgame === 'rated' ? true : false;
 	if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
 	spiel.add(gameid,variant,color,player,rated,function(game){
 		res.redirect('/games/'+gameid);
 	});
+
 });
 
 //Gets a list of games
@@ -214,6 +226,16 @@ app.get('/session',function(req,res){
 		//No session, No data for you!
 		res.send(204,false);
 	}
+});
+
+app.get('/online',function(req,res){
+	var data = [];
+	for(var key in online) {
+		if (online.hasOwnProperty(key) && key.indexOf('_timeout')===-1 && online[key]) {
+			data.push(key);
+		}
+	}
+	res.send(200,{online:data});
 });
 
 //Gets a game html file
@@ -292,9 +314,14 @@ app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	var gameid = req.params.gameid;
 	if(okId(gameid)) {
 		spiel.find(gameid,function(game){
-			var data = game.serialize()
-			data.orientation = (req.session.username === data.blackusername) ? 'black' : 'white';
-			res.send(data);
+			if (game.state===spiel.state('finished')) {
+				var data = game.serialize();
+				data.orientation = (req.session.username === data.blackusername) ? 'black' : 'white';
+				res.send(data);
+			} else {
+				//No peeking!
+				res.send(403);
+			}
 		});
 	} else {
 		badId(res);
@@ -306,13 +333,32 @@ app.get('/logout',security.authenticateUser,function(req,res){
 });
 
 //-------------------------------------------
-//Express
+// Express
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('KRIEGSPIEL :: server listening on port ' + app.get('port'));
 });
 
+
 //-------------------------------------------
-//WebSockets:
+// Lobby
+var goOnline = function(socket,username) {
+	clearTimeout(online[username + '_timeout']);
+	delete online[username + '_timeout'];
+	online[username] = true;
+	socket.broadcast.emit("lobbyadd",{ username:username });
+	cache.set('online',online);
+}
+
+var goOffline = function(socket,username) {
+	online[username + '_timeout'] = setTimeout(function() { 
+		delete online[username];
+		socket.broadcast.emit("lobbyremove",{ username:username });
+		cache.set('online',online);
+	},1000);
+}
+
+//-------------------------------------------
+// WebSockets:
 
 //Gets the connect-redis signed session cookie for the socket
 var parseSessionCookie = function(cookie, callback) {
@@ -345,6 +391,8 @@ io.sockets.on('connection', function (socket) {
 	parseSessionCookie(socket.handshake.headers.cookie, function(err,session) {
 		if(!err && session && session.username) {
 			socket.set('username',session.username,function(){
+				
+				goOnline(socket,session.username);				
 				
 				socket.on('join', function (data) {
 					if(data.gameid) spiel.join(data.gameid, {session:session, socket:socket}, function(game) {
@@ -394,6 +442,15 @@ io.sockets.on('connection', function (socket) {
 				
 				socket.on('ping', function (data) {
 					if(data.gameid) spiel.ping(data.gameid, {session:session, socket:socket});		
+				});
+
+				socket.on('challenge', function(data){
+					//TODO: challenge a user in the 'lobby'
+				});
+
+				socket.on('disconnect', function(data){
+					//TODO: setTimeout to remove player from the 'lobby'
+					goOffline(socket,session.username);
 				});
 
 			});

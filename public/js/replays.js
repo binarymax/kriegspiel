@@ -24,6 +24,7 @@
 		if(status==="success" && data) {
 			$("#finished").render("finished",data);
 		}
+		kriegspiel.lobby.init();
 	});
 
 })();

@@ -85,6 +85,13 @@
 		return nobubble(e);
 	}
 	
+	//Forgot Password checked
+	var setForgot2 = function(e) {
+		$("#login").show();
+		$("#forgot").hide();
+		return nobubble(e);
+	}
+
 	//Toggles if the 'create new account' box is checked
 	var newAccount = false;
 	var setNewAccount = function(e) {
@@ -169,24 +176,32 @@
 
 	var loadGames = function() {
 
+		var loaded = 0;
+		var ready = function(){
+			if(++loaded===3) kriegspiel.lobby.init();
+		}
+
 		$("#lists").show();
 
 		$.get("/games?state=inactive",function(data,status){
 			if(status==="success" && data) {
 				$("#inactive").render("inactive",data);
-			}		
+			}
+			ready();		
 		});
 	
 		$.get("/games?state=active",function(data,status){
 			if(status==="success" && data) {
 				$("#active").render("active",data);
 			}		
+			ready();
 		});
 	
 		$.get("/games?state=finished",function(data,status){
 			if(status==="success" && data) {
 				$("#finished").render("finished",data);
-			}		
+			}
+			ready();		
 		});
 
 	};
@@ -206,10 +221,12 @@
 	
 	var onJoinAdd = function(data) {
 		$("#inactive").render("inactive",[data]);
+		kriegspiel.lobby.check($("#inactive"));
 	};
 
 	var onJoinRemove = function(data) {
 		$("#inactive").find("li[data-gameid='"+data.gameid+"']").remove();
+		kriegspiel.lobby.check($("#inactive"));
 	};
 
 	//-----------------------------------------
@@ -235,6 +252,7 @@
 	$("#startgame").on("click",doStartDialog);
 	$("#newaccount").on("click",setNewAccount);
 	$("#forgotpswd").on("click",setForgot);
+	$("#forgotpswd2").on("click",setForgot2);
 
 	setVariant();
 	setNewAccount();
