@@ -8,9 +8,12 @@ if(!kriegspiel.lobby) {
 		var _socket  = io.connect('http://'+document.domain);
 		var _tooltip = $('<div class="tooltip"></div>');
 
+		var _username = null;
+
+		//var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em><br><span class='challenge'>Challenge!</span></div>";
 		var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em></div>";
 		var _tipOffline = "<div><em><strong>This Spieler is Offline</strong></em></div>";
-		
+
 		//A Spieler joined the lobby
 		var onLobbyAdd = function(data) {
 			$(".spieler[data-spieler='"+data.username+"']").addClass("online");
@@ -33,9 +36,42 @@ if(!kriegspiel.lobby) {
 				}
 			}
 		}
+
+		//A Spieler hath challenged thee!
+		var onLobbyChallengeAccepted = function(data) {
+			if (data.challenged && data.challenger===_username) {
+				alert('accepted!');
+			}
+		}
+
+		//A Spieler hath challenged thee!
+		var onLobbyChallengeDeclined = function(data) {
+			if (data.challenged && data.challenger===_username) {
+				alert('declined!');
+			}
+		}
+
+		//A Spieler hath challenged thee!
+		var onLobbyChallenge = function(data) {
+			if (data.challenger && data.challenged===_username) {
+				var message = data.challenger + " has challenged you to a game of kriegspiel!  Do you accept the challenge?";
+				if (window.confirm(message)) {
+					_socket.emit("acceptchallenge",data);
+					//location.href=url;
+				} else {
+					_socket.emit("declinechallenge",data);
+				}
+			}
+		}
 		
+		var doChallengeSpieler = function(e) {
+			var challenged = $(this).parents(".spieler:first").attr("data-spieler");
+			var data = {challenger:_username,challenged:challenged};
+			_socket.emit("challenge",data);			
+		}
+
 		//Mouseover spieler elements, show tooltip
-		var onHoverEnter = function(e) {
+		var doHoverEnter = function(e) {
 			var spieler = $(this);
 			var offset = $(this).offset(), top, left;
 			if (offset && (top=offset.top) && (left=offset.left)) {
@@ -52,13 +88,13 @@ if(!kriegspiel.lobby) {
 		};
 							
 		//Mouseout spieler elements, remove tooltip
-		var onHoverLeave = function(e) {
+		var doHoverLeave = function(e) {
 			$(this).find(".tooltip").remove();
 			e.stopPropagation();
 			e.preventDefault();
 			return false;
 		};
-		
+				
 		var check = function(element){
 			element.find(".spieler").each(function(){
 				var spieler = $(this);
@@ -74,6 +110,7 @@ if(!kriegspiel.lobby) {
 		}		
 		
 		var init = function(){
+			
 			$.get("/online",function(data,status){
 				if(status==="success" && data) {
 					_online = data.online;
@@ -85,12 +122,24 @@ if(!kriegspiel.lobby) {
 			});
 
 			$("body")
-				.on("mouseenter",".spieler",onHoverEnter)
-				.on("mouseleave",".spieler",onHoverLeave);
+				.on("mouseenter",".spieler",doHoverEnter)
+				.on("mouseleave",".spieler",doHoverLeave)
+				.on("click",".spieler .challenge",doChallengeSpieler)			
+			
 		}		
-				
+
+		//Checks for an existing session, and toggles the login box/session info respectively
+		$.get("/session",function(data,status){
+			if(status==="success" && data && data.username) {
+				_username = data.username
+			}
+		},"json");
+	
 		_socket.on('lobbyadd', onLobbyAdd);
 		_socket.on('lobbyremove', onLobbyRemove);
+		_socket.on('lobbychallenge', onLobbyChallenge);
+		_socket.on('lobbychallengeaccept', onLobbyChallengeAccepted);
+		_socket.on('lobbychallengedecline', onLobbyChallengeDeclined);
 
 		return {
 			init:init,

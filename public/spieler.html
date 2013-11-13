@@ -4,7 +4,7 @@
 <title>Spieler - KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-13T11:53:14+0000" >
+<meta name="date" content="2013-11-13T18:23:47+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -57,11 +57,11 @@
 	</footer>	
 	
 	<script type="text/template" data-type="template" data-template="finished">
-		<li class="finished" data-gameid="{{gameid}}">{{white}} vs {{black}} ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
+		<li class="finished" data-gameid="{{gameid}}"><span class="spieler" data-spieler="{{white}}">{{white}}</span> vs <span class="spieler" data-spieler="{{black}}">{{black}}</span> ({{result}})<br>{{enddate}} - {{moves}} moves<a href="/replays/{{gameid}}" class="right join">Replay!</a></li>	
 	</script>
 
 	<script type="text/template" data-type="template" data-template="noresults">
-		<li class="noresults">You do not have any {{type}} games available.</li>
+		<li class="noresults">This spieler has not completed any games.</li>
 	</script>
 	
 	<script type="text/template" data-type="template" data-template="half">½</script>

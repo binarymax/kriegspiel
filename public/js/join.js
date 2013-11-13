@@ -220,8 +220,11 @@
 	};
 	
 	var onJoinAdd = function(data) {
-		$("#inactive").render("inactive",[data]);
-		kriegspiel.lobby.check($("#inactive"));
+		var $inactive = $("#inactive");
+		if(!$inactive.find("li[data-gameid='"+data.gameid+"']").length) {
+			$inactive.render("inactive",[data]);
+			kriegspiel.lobby.check($inactive);
+		}
 	};
 
 	var onJoinRemove = function(data) {

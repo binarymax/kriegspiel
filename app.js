@@ -168,17 +168,36 @@ app.post('/forgot/?', function(req,res) {
 
 //Starts a new Game:
 app.post('/start/?', security.authenticateUser, function(req,res) {
-	var gameid = Math.floor(Math.random()*100000).toString(16);
-	var variant = 'lovenheim'; //req.body.variant;
-	var color   = req.body.startcolor;
-	var player  = req.session.username;
-	var rated   = true; //req.body.ratedgame === 'rated' ? true : false;
-	if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
-	spiel.add(gameid,variant,color,player,rated,function(game){
-		res.redirect('/games/'+gameid);
-	});
 
+	var username = req.session.username;
+	var inactive = spiel.state('inactive');
+
+	db.findGamesByFilter({state:inactive,whiteusername:username},formatgame,function(err,records) {
+		if(!err && records.length) {
+			//Inactive game found
+			res.redirect('/games/'+records[0].gameid);
+		} else {
+			db.findGamesByFilter({state:inactive,blackusername:username},formatgame,function(err,records) {
+				if(!err && records.length) {
+					//Inactive game found
+					res.redirect('/games/'+records[0].gameid);
+				} else {
+					//No inactive games found - create a new one!	
+					var gameid = Math.floor(Math.random()*100000).toString(16);
+					var variant = 'lovenheim'; //req.body.variant;
+					var color   = req.body.startcolor;
+					var player  = req.session.username;
+					var rated   = true; //req.body.ratedgame === 'rated' ? true : false;
+					if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
+					spiel.add(gameid,variant,color,player,rated,function(game){
+						res.redirect('/games/'+gameid);
+					});
+				}			
+			});
+		}
+	});
 });
+
 
 //Gets a list of games
 app.get('/games/?', security.authenticateUser, function(req,res) {
@@ -187,7 +206,7 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		
 	if (state===spiel.state('inactive')) {
 		//Get all the inactive games
-		db.findGamesByFilter({state:state},formatgame,sender(res));
+		db.findGamesByFilter({state:state,rated:true},formatgame,sender(res));
 		
 	} else if (req && req.session && req.session.username) {
 		//Get the user's games (both as black and white)
@@ -195,10 +214,10 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		var merge = merger(2,res);
 		
 		//Get the user's games as white
-		db.findGamesByFilter({state:state,whiteusername:username},formatgame,merge);
+		db.findGamesByFilter({state:state,rated:true,whiteusername:username},formatgame,merge);
 		
 		//Get the user's games as black
-		db.findGamesByFilter({state:state,blackusername:username},formatgame,merge);
+		db.findGamesByFilter({state:state,rated:true,blackusername:username},formatgame,merge);
 
 	} else {
 		//No session, No data for you!
@@ -228,6 +247,7 @@ app.get('/session',function(req,res){
 	}
 });
 
+//Gets all the users that are online
 app.get('/online',function(req,res){
 	var data = [];
 	for(var key in online) {
@@ -267,15 +287,15 @@ app.get('/replays/?',function(req,res){
 		var merge = merger(2,res);	
 		
 		//Get the user's games as white
-		db.findGamesByFilter({state:spiel.state('finished'),whiteusername:username},formatgame,merge);
+		db.findGamesByFilter({state:spiel.state('finished'),rated:true,whiteusername:username},formatgame,merge);
 		
 		//Get the user's games as black
-		db.findGamesByFilter({state:spiel.state('finished'),blackusername:username},formatgame,merge);
+		db.findGamesByFilter({state:spiel.state('finished'),rated:true,blackusername:username},formatgame,merge);
 
 	} else { 
 
 		//Gets all the finished games:
-		db.findGamesByFilter({state:spiel.state('finished')},formatgame,sender(res));
+		db.findGamesByFilter({state:spiel.state('finished'),rated:true},formatgame,sender(res));
 	}
 	
 });
@@ -328,6 +348,7 @@ app.get('/data/:gameid',security.authenticateUser,function(req,res){
 	}
 });
 
+//Logs out the user
 app.get('/logout',security.authenticateUser,function(req,res){
 	req.session.destroy(function(){res.redirect('/join')});
 });
@@ -391,7 +412,7 @@ io.sockets.on('connection', function (socket) {
 	parseSessionCookie(socket.handshake.headers.cookie, function(err,session) {
 		if(!err && session && session.username) {
 			socket.set('username',session.username,function(){
-				
+								
 				goOnline(socket,session.username);				
 				
 				socket.on('join', function (data) {
@@ -445,7 +466,18 @@ io.sockets.on('connection', function (socket) {
 				});
 
 				socket.on('challenge', function(data){
-					//TODO: challenge a user in the 'lobby'
+					//challenge a user in the 'lobby'
+					socket.broadcast.emit("lobbychallenge",data);
+				});
+
+				socket.on('acceptchallenge', function(data){
+					//Accept a challenge in the 'lobby'
+					socket.broadcast.emit("lobbychallengeaccept",data);
+				});
+
+				socket.on('declinechallenge', function(data){
+					//Decline a challenge in the 'lobby'
+					socket.broadcast.emit("lobbychallengedecline",data);
 				});
 
 				socket.on('disconnect', function(data){
