@@ -172,29 +172,22 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 	var username = req.session.username;
 	var inactive = spiel.state('inactive');
 
-	db.findGamesByFilter({state:inactive,whiteusername:username},formatgame,function(err,records) {
+	db.findGamesByPlayerAndState(username,inactive,formatgame,function(err,records) {
 		if(!err && records.length) {
 			//Inactive game found
 			res.redirect('/games/'+records[0].gameid);
 		} else {
-			db.findGamesByFilter({state:inactive,blackusername:username},formatgame,function(err,records) {
-				if(!err && records.length) {
-					//Inactive game found
-					res.redirect('/games/'+records[0].gameid);
-				} else {
-					//No inactive games found - create a new one!	
-					var gameid = Math.floor(Math.random()*100000).toString(16);
-					var variant = 'lovenheim'; //req.body.variant;
-					var color   = req.body.startcolor;
-					var player  = req.session.username;
-					var rated   = true; //req.body.ratedgame === 'rated' ? true : false;
-					if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
-					spiel.add(gameid,variant,color,player,rated,function(game){
-						res.redirect('/games/'+gameid);
-					});
-				}			
+			//No inactive games found - create a new one!	
+			var gameid = Math.floor(Math.random()*100000).toString(16);
+			var variant = 'lovenheim'; //req.body.variant;
+			var color   = req.body.startcolor;
+			var player  = req.session.username;
+			var rated   = true; //req.body.ratedgame === 'rated' ? true : false;
+			if (color === 'random') color = Math.floor(Math.random()*100)%2?'white':'black';
+			spiel.add(gameid,variant,color,player,rated,function(game){
+				res.redirect('/games/'+gameid);
 			});
-		}
+		}			
 	});
 });
 
@@ -206,7 +199,7 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		
 	if (state===spiel.state('inactive')) {
 		//Get all the inactive games
-		db.findGamesByFilter({state:state,rated:true},formatgame,sender(res));
+		db.findGamesByFilter({state:state},formatgame,sender(res));
 		
 	} else if (req && req.session && req.session.username) {
 		//Get the user's games (both as black and white)
@@ -283,14 +276,9 @@ app.get('/replays/?',function(req,res){
 	if (req.query.username) {
 		//Only get finished games for a specific username
 		var username = req.query.username;
+		var finished = spiel.state('finished');
 
-		var merge = merger(2,res);	
-		
-		//Get the user's games as white
-		db.findGamesByFilter({state:spiel.state('finished'),rated:true,whiteusername:username},formatgame,merge);
-		
-		//Get the user's games as black
-		db.findGamesByFilter({state:spiel.state('finished'),rated:true,blackusername:username},formatgame,merge);
+		db.findGamesByPlayerAndState(username,finished,formatgame,sender(res));
 
 	} else { 
 

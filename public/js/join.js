@@ -1,7 +1,8 @@
 (function(){
 
-	var _socket  = io.connect('http://'+document.domain);
-	var onehalf = $("script[data-template='half']").html();
+	var _username = null;
+	var _socket   = io.connect('http://'+document.domain);
+	var onehalf   = $("script[data-template='half']").html();
 
  	var querystring = function(key,url){
 	  url = url || window.location.search;
@@ -38,19 +39,21 @@
 	};
 	
 	//Naive jquery render
-	$.fn.render = function(template,data) {
+	$.fn.render = function(template,data,map) {
 		var $target = this;
 		var source = $("script[data-template='"+template+"']").html();
 		for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
 			record = data[i];
-			html = source;
-			for(var key in record) { 
-				if(record.hasOwnProperty(key)) {
-					rekey = new RegExp("\{\{"+key+"\}\}","g");
-					html  = html.replace(rekey,record[key]);
+			if (typeof map !== 'function' || map(record)) {  
+				html = source;
+				for(var key in record) { 
+					if(record.hasOwnProperty(key)) {
+						rekey = new RegExp("\{\{"+key+"\}\}","g");
+						html  = html.replace(rekey,record[key]);
+					}
 				}
+				$target.append(html.replace(/0\.5/g,onehalf).replace(/\.5/g,onehalf));
 			}
-			$target.append(html.replace(/0\.5/g,onehalf).replace(/\.5/g,onehalf));
 		};
 		return $target;
 	}
@@ -238,6 +241,7 @@
 	//Checks for an existing session, and toggles the login box/session info respectively
 	$.get("/session",function(data,status){
 		if(status==="success" && data && data.username) {
+			_username = data.username;
 			$("#sessionusername").text(data.username);			
 			$("#session").show();
 			$("#login").hide();
