@@ -337,6 +337,7 @@ article hr {
 
 .spieler {
 	color:#333;
+	cursor:pointer;
 }
 
 .online {
@@ -586,3 +587,32 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 .social-right { display:inline-block; margin-top:10px; float:right;}
 
 .spielercolumn { text-align:center; }
+
+#lobby {
+	position:fixed;
+	top:0px;
+	right:0px;
+	width:200px;
+	border:1px solid #ccc;
+	background-color:#fff;
+	padding:5px;
+}
+
+#lobby > #chats {
+	margin:0px;
+	padding:0px;
+	list-style-type: none;
+}
+
+.chatbox { 
+	border:1px solid #ccc;
+}
+
+.chatbox > h3 {
+	margin:5px;
+	margin-left:2px;
+}
+
+.inline {
+	display:inline-block;
+}

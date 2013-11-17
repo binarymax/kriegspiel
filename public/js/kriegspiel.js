@@ -376,7 +376,12 @@ var kriegspiel = (function() {
 			  orientation: _color,
 			  fade: _o,
 			  assetHost: 'http://static.krgspl.com/krgspl'
-			}); 
+			});
+			
+			if(navigator.userAgent.match(/iPad/i)) {
+				//iPad board size bug
+				$("#board > div > div:nth-child(2)").css("width","596px");
+			}
 
 			_board.start(false);
 

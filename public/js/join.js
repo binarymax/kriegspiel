@@ -42,6 +42,7 @@
 	$.fn.render = function(template,data,map) {
 		var $target = this;
 		var source = $("script[data-template='"+template+"']").html();
+		data = (data instanceof Array) ? data:[data]; 
 		for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
 			record = data[i];
 			if (typeof map !== 'function' || map(record)) {  
@@ -180,8 +181,8 @@
 	var loadGames = function() {
 
 		var loaded = 0;
-		var ready = function(){
-			if(++loaded===3) kriegspiel.lobby.init();
+		var ready = function() {
+			if(++loaded===3) kriegspiel.lobby.init('join');
 		}
 
 		$("#lists").show();
@@ -234,6 +235,11 @@
 		$("#inactive").find("li[data-gameid='"+data.gameid+"']").remove();
 		kriegspiel.lobby.check($("#inactive"));
 	};
+	
+	//A Spieler left the lobby
+	var onLobbyRemove = function(data) {
+		$("#inactive").find("li.waiting[data-spieler='"+data.username+"']").remove();
+	}
 
 	//-----------------------------------------
 	// AJAXY stuff
@@ -266,5 +272,6 @@
 
 	_socket.on('joinadd', onJoinAdd);
 	_socket.on('joinremove', onJoinRemove);
+	_socket.on('lobbyremove', onLobbyRemove);
 	
 })();

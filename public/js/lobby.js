@@ -10,9 +10,26 @@ if(!kriegspiel.lobby) {
 
 		var _username = null;
 
-		//var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em><br><span class='challenge'>Challenge!</span></div>";
-		var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em></div>";
+		var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em><br><div class='challenge inline'>Challenge!</div><div class='chat inline'>Chat</div></div>";
+		var _tipOnlineI = "<div><em><strong>This Spieler is Online!</strong></em></div>";
 		var _tipOffline = "<div><em><strong>This Spieler is Offline</strong></em></div>";
+
+		var tmplonline = 
+			'<script type="text/template" data-type="template" data-template="online">' +
+			'<li class="online" data-spieler="{{spieler}}">{{spieler}}</li>' + 	
+			'</script>';
+
+		var tmplchatbox = 
+			'<script type="text/template" data-type="template" data-template="chatbox">' +
+			'<li class="chatbox" data-spieler="{{spieler}}"><h3 class="chattitle">{{spieler}}</h3><div class="chatbody"><ul class="chatlist"></ul>' + 
+			'<form class="chatform"><input type="text" name="chat" class="chattext"></form></div></li>' + 
+			'</script>';
+			
+		var tmplchatmessage = 
+			'<script type="text/template" data-type="template" data-template="chatmessage">' +
+			'<li class="chatmessage">{{text}}</li>' + 	
+			'</script>';
+
 
 		//A Spieler joined the lobby
 		var onLobbyAdd = function(data) {
@@ -23,12 +40,16 @@ if(!kriegspiel.lobby) {
 					break;
 				}
 			}
-			if (f===-1) _online.push(data.username)
+			if (f===-1) {
+				_online.push(data.username);
+				$("#online").render("online",{spieler:data.username});
+			}
 		}
 		
 		//A Spieler left the lobby
 		var onLobbyRemove = function(data) {
 			$(".spieler[data-spieler='"+data.username+"']").removeClass("online");
+			$("#online > .spieler[data-spieler='"+data.username+"']").remove();
 			for(var i=0,l=_online.length;i<l;i++) {
 				if (_online[i]===data.username) {
 					_online.splice(i,1);
@@ -64,6 +85,32 @@ if(!kriegspiel.lobby) {
 			}
 		}
 		
+		//Gets a Chatbox UI
+		var getChatbox = function(spieler){
+			var selector = "#chats > .chatbox[data-spieler='"+spieler+"'] > .chatbody > .chatlist";
+			var chatbox = $(selector);
+			if(!chatbox.length) {
+				$("#chats").render("chatbox",{spieler:spieler});
+				chatbox = $(selector);
+			}
+			return chatbox;
+		}
+		
+		//Chat message Received
+		var onLobbyChat = function(data){
+			var spieler;
+			if (_username === data.to) spieler = data.from; 
+			if (_username === data.from) spieler = data.to;
+			var chatbox = getChatbox(spieler);
+			data.text = data.text||'';
+			chatbox.render("chatmessage",data);
+		}
+
+		//-----------------------------------------
+		// Client side events
+
+
+		//Challenge a spieler to a match
 		var doChallengeSpieler = function(e) {
 			var challenged = $(this).parents(".spieler:first").attr("data-spieler");
 			var data = {challenger:_username,challenged:challenged};
@@ -73,9 +120,10 @@ if(!kriegspiel.lobby) {
 		//Mouseover spieler elements, show tooltip
 		var doHoverEnter = function(e) {
 			var spieler = $(this);
+			var player = spieler.attr("data-spieler");
 			var offset = $(this).offset(), top, left;
 			if (offset && (top=offset.top) && (left=offset.left)) {
-				var content = $(this).hasClass("online") ? _tipOnline : _tipOffline;
+				var content = $(this).hasClass("online") ? (player===_username?_tipOnlineI:_tipOnline) : _tipOffline;
 				var height  = $(this).innerHeight();
 				var width   = $(this).innerWidth();
 				top  = top  + height + 'px';
@@ -94,14 +142,40 @@ if(!kriegspiel.lobby) {
 			e.preventDefault();
 			return false;
 		};
+		
+		var doChatSpieler = function(e) {
+			var spieler = $(this).parents(".spieler:first").attr("data-spieler");
+			if (spieler !== _username) onLobbyChat({from:_username,to:spieler}); 
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		};
+		
+		var doChatSubmit = function(e) {
+			var chatbox  = $(this).parents(".chatbox:first");
+			var chattext = $(this).find(".chattext");
+			var spieler  = chatbox.attr("data-spieler");
+			var message  = chattext.val();
+			_socket.emit('lobbychat',{from:_username,to:spieler,text:message});
+			chattext.val('');
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		
+		
+		//---------------------------------------------
+		// Client API
+		
 				
+		//Check online status for all players
 		var check = function(element){
 			element.find(".spieler").each(function(){
 				var spieler = $(this);
 				var username = spieler.attr("data-spieler");
 				for(var i=0,f=-1,l=_online.length;i<l;i++) {
 					if (_online[i] === username) {
-						spieler.addClass("online")
+						spieler.addClass("online");
 						break;
 					} 
 				}
@@ -109,38 +183,51 @@ if(!kriegspiel.lobby) {
 			});
 		}		
 		
-		var init = function(){
-			
-			$.get("/online",function(data,status){
-				if(status==="success" && data) {
-					_online = data.online;
-					$(".spieler").removeClass("online");
-					for(var i=0,l=data.online.length;i<l;i++) {
-						onLobbyAdd({username:data.online[i]});
-					}
+		var init = function(room){
+
+			//Checks for an existing session, and toggles the login box/session info respectively
+			$.get("/session",function(data,status){
+				if(status==="success" && data && data.username) {
+					_username = data.username
+
+					_socket.on('lobbyadd', onLobbyAdd);
+					_socket.on('lobbychat', onLobbyChat);
+					_socket.on('lobbyremove', onLobbyRemove);
+					_socket.on('lobbychallenge', onLobbyChallenge);
+					_socket.on('lobbychallengeaccept', onLobbyChallengeAccepted);
+					_socket.on('lobbychallengedecline', onLobbyChallengeDeclined);		
+		
+					$("body")
+						.on("mouseenter",".spieler",doHoverEnter)
+						.on("mouseleave",".spieler",doHoverLeave)
+						.on("click",".spieler .chat",doChatSpieler)
+						.on("click",".spieler .challenge",doChallengeSpieler)
+						.append(tmplonline)	
+						.append(tmplchatbox)
+						.append(tmplchatmessage)		
+						.append("<div id='lobby'><ul id='online'></ul><ul id='chats'></ul></div>")
+						
+					$("#lobby").on("submit",".chatform",doChatSubmit);		
+					
+					$.get("/online",function(data,status){
+						if(status==="success" && data) {
+							_online = data.online;
+							$(".spieler").removeClass("online");
+							for(var i=0,l=_online.length;i<l;i++) {
+								$("#online").render("online",{spieler:_online[i]});
+								onLobbyAdd({username:_online[i]});
+							}
+						}
+					});
+								
+					_socket.emit('lobbyjoin',{room:room});
+
 				}
-			});
 
-			$("body")
-				.on("mouseenter",".spieler",doHoverEnter)
-				.on("mouseleave",".spieler",doHoverLeave)
-				.on("click",".spieler .challenge",doChallengeSpieler)			
-			
-		}		
-
-		//Checks for an existing session, and toggles the login box/session info respectively
-		$.get("/session",function(data,status){
-			if(status==="success" && data && data.username) {
-				_username = data.username
-			}
-		},"json");
-	
-		_socket.on('lobbyadd', onLobbyAdd);
-		_socket.on('lobbyremove', onLobbyRemove);
-		_socket.on('lobbychallenge', onLobbyChallenge);
-		_socket.on('lobbychallengeaccept', onLobbyChallengeAccepted);
-		_socket.on('lobbychallengedecline', onLobbyChallengeDeclined);
-
+			},"json");
+					
+		}
+		
 		return {
 			init:init,
 			check:check

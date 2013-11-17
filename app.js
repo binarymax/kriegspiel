@@ -21,7 +21,7 @@ var express = require('express')
   , spiel = require('./lib/spiel')
   , variants = require('./lib/variants').load()
   , cache = require('./lib/cache')
-  , online = [];
+  , lobby = require('./lib/lobby');
   
 var app = express();
 
@@ -41,18 +41,10 @@ app.configure(function() {
 
 	//Setup rethinkdb connection
 	db.setup();
-		
-	//Get who's online
-	cache.get('online',-1,function(records,err){
-		online = records||[];
-		for(var key in online) {
-			if (online.hasOwnProperty(key) && key.indexOf('_timeout')>-1 && online[key]) {
-				var username = key.substr(0,key.indexOf('_timeout'));
-				delete online[username];
-			}
-		}
-	});
 
+	//Setup spieler lobby
+	lobby.setup();
+		
 	// development only
 	if ('development' == app.get('env')) {
 	  app.use(express.errorHandler());
@@ -199,11 +191,29 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		
 	if (state===spiel.state('inactive')) {
 		//Get all the inactive games
-		db.findGamesByFilter({state:state},formatgame,sender(res));
+		db.findGamesByFilter({state:state},formatgame,function(err,results){
+			var send = sender(res);
+			if (err) {
+				send(err,results);
+			} else {
+				var outgoing = [];
+				for(var i=0,l=results.length;i<l;i++) {
+					if (lobby.isonline(results[i].player)) {
+						//only add online players to the waiting list!
+						outgoing.push(results[i]);
+					}
+				}
+				send(err,outgoing);
+			}
+		});
 		
 	} else if (req && req.session && req.session.username) {
 		//Get the user's games (both as black and white)
 		var username = req.session.username;
+		
+		db.findGamesByPlayerAndState(username,state,formatgame,sender(res));		
+		
+		/*
 		var merge = merger(2,res);
 		
 		//Get the user's games as white
@@ -211,7 +221,8 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		
 		//Get the user's games as black
 		db.findGamesByFilter({state:state,rated:true,blackusername:username},formatgame,merge);
-
+		*/
+		
 	} else {
 		//No session, No data for you!
 		req.send(204,false);
@@ -242,13 +253,7 @@ app.get('/session',function(req,res){
 
 //Gets all the users that are online
 app.get('/online',function(req,res){
-	var data = [];
-	for(var key in online) {
-		if (online.hasOwnProperty(key) && key.indexOf('_timeout')===-1 && online[key]) {
-			data.push(key);
-		}
-	}
-	res.send(200,{online:data});
+	res.send(200,{online:lobby.isonline()});
 });
 
 //Gets a game html file
@@ -349,24 +354,6 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 
 //-------------------------------------------
-// Lobby
-var goOnline = function(socket,username) {
-	clearTimeout(online[username + '_timeout']);
-	delete online[username + '_timeout'];
-	online[username] = true;
-	socket.broadcast.emit("lobbyadd",{ username:username });
-	cache.set('online',online);
-}
-
-var goOffline = function(socket,username) {
-	online[username + '_timeout'] = setTimeout(function() { 
-		delete online[username];
-		socket.broadcast.emit("lobbyremove",{ username:username });
-		cache.set('online',online);
-	},1000);
-}
-
-//-------------------------------------------
 // WebSockets:
 
 //Gets the connect-redis signed session cookie for the socket
@@ -401,8 +388,6 @@ io.sockets.on('connection', function (socket) {
 		if(!err && session && session.username) {
 			socket.set('username',session.username,function(){
 								
-				goOnline(socket,session.username);				
-				
 				socket.on('join', function (data) {
 					if(data.gameid) spiel.join(data.gameid, {session:session, socket:socket}, function(game) {
 						if (game.state===spiel.state('inactive')) {
@@ -453,25 +438,11 @@ io.sockets.on('connection', function (socket) {
 					if(data.gameid) spiel.ping(data.gameid, {session:session, socket:socket});		
 				});
 
-				socket.on('challenge', function(data){
-					//challenge a user in the 'lobby'
-					socket.broadcast.emit("lobbychallenge",data);
-				});
-
-				socket.on('acceptchallenge', function(data){
-					//Accept a challenge in the 'lobby'
-					socket.broadcast.emit("lobbychallengeaccept",data);
-				});
-
-				socket.on('declinechallenge', function(data){
-					//Decline a challenge in the 'lobby'
-					socket.broadcast.emit("lobbychallengedecline",data);
-				});
-
 				socket.on('disconnect', function(data){
-					//TODO: setTimeout to remove player from the 'lobby'
-					goOffline(socket,session.username);
+					lobby.disconnect(socket,session.username);
 				});
+
+				lobby.connect(socket,session.username);
 
 			});
 		}
