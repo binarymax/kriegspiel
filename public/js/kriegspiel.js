@@ -9,10 +9,12 @@
 
 var kriegspiel = (function() {
 
+	var _socket   = window._socket;
+	if(!_socket) _socket = window._socket = io.connect('http://'+document.domain);
+
 	var _variant = {'occupies':true};
 	var _colors  = {'w':'white','b':'black'};
 	var _colorx  = {'white':'black','black':'white'};
-	var _socket  = io.connect('http://'+document.domain);
 	var _gameid  = location.href.substr(location.href.indexOf('/games/')+7);
 
 	var _active   = false; //Your turn is active or not

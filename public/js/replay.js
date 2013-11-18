@@ -156,7 +156,12 @@ var replay = (function() {
 			  orientation: _color,
 			  assetHost: 'http://static.krgspl.com/krgspl'
 			});
-
+	
+			if(navigator.userAgent.match(/iPad/i)) {
+				//iPad board size bug
+				$("#board > div > div").css("width","596px");
+			}
+	
 			_board.start(false);
 		}
 

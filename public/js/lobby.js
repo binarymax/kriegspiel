@@ -3,33 +3,32 @@ var kriegspiel = window.kriegspiel;
 if(!kriegspiel.lobby) {
 	kriegspiel.lobby = (function(){
 	
-		var _online = [];	
+		var _socket   = window._socket;
+		if(!_socket) _socket = window._socket = io.connect('http://'+document.domain);
 	
-		var _socket  = io.connect('http://'+document.domain);
-		var _tooltip = $('<div class="tooltip"></div>');
-
+		var _online = [];		
 		var _username = null;
 
-		var _tipOnline  = "<div><em><strong>This Spieler is Online!</strong></em><br><div class='challenge inline'>Challenge!</div><div class='chat inline'>Chat</div></div>";
-		var _tipOnlineI = "<div><em><strong>This Spieler is Online!</strong></em></div>";
-		var _tipOffline = "<div><em><strong>This Spieler is Offline</strong></em></div>";
-
-		var tmplonline = 
-			'<script type="text/template" data-type="template" data-template="online">' +
-			'<li class="online" data-spieler="{{spieler}}">{{spieler}}</li>' + 	
-			'</script>';
-
-		var tmplchatbox = 
-			'<script type="text/template" data-type="template" data-template="chatbox">' +
-			'<li class="chatbox" data-spieler="{{spieler}}"><h3 class="chattitle">{{spieler}}</h3><div class="chatbody"><ul class="chatlist"></ul>' + 
-			'<form class="chatform"><input type="text" name="chat" class="chattext"></form></div></li>' + 
-			'</script>';
-			
-		var tmplchatmessage = 
-			'<script type="text/template" data-type="template" data-template="chatmessage">' +
-			'<li class="chatmessage">{{text}}</li>' + 	
-			'</script>';
-
+		//Naive jquery render
+		$.fn.render = function(template,data,map) {
+			var $target = this;
+			var source = $("script[data-template='"+template+"']").html();
+			data = (data instanceof Array) ? data:[data]; 
+			for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
+				record = data[i];
+				if (typeof map !== 'function' || map(record)) {  
+					html = source;
+					for(var key in record) { 
+						if(record.hasOwnProperty(key)) {
+							rekey = new RegExp("\{\{"+key+"\}\}","g");
+							html  = html.replace(rekey,record[key]);
+						}
+					}
+					$target.append(html.replace(/0\.5/g,'½').replace(/\.5/g,'½'));
+				}
+			};
+			return $target;
+		}
 
 		//A Spieler joined the lobby
 		var onLobbyAdd = function(data) {
@@ -42,7 +41,7 @@ if(!kriegspiel.lobby) {
 			}
 			if (f===-1) {
 				_online.push(data.username);
-				$("#online").render("online",{spieler:data.username});
+				if(data.username!==_username) $("#online").render("lobbyonline",data);
 			}
 		}
 		
@@ -90,7 +89,7 @@ if(!kriegspiel.lobby) {
 			var selector = "#chats > .chatbox[data-spieler='"+spieler+"'] > .chatbody > .chatlist";
 			var chatbox = $(selector);
 			if(!chatbox.length) {
-				$("#chats").render("chatbox",{spieler:spieler});
+				$("#chats").render("lobbychatbox",{spieler:spieler});
 				chatbox = $(selector);
 			}
 			return chatbox;
@@ -99,56 +98,55 @@ if(!kriegspiel.lobby) {
 		//Chat message Received
 		var onLobbyChat = function(data){
 			var spieler;
-			if (_username === data.to) spieler = data.from; 
-			if (_username === data.from) spieler = data.to;
+			if (_username === data.to) { spieler = data.from; data.msgclass="to"; } 
+			if (_username === data.from) { spieler = data.to; data.msgclass="from"; }
 			var chatbox = getChatbox(spieler);
-			data.text = data.text||'';
-			chatbox.render("chatmessage",data);
+			if (data.text) chatbox.render("lobbychatmessage",data);
+			$("#lobby > #panel > #chats").show();
+			doLobbyDisplay(null,true);
 		}
 
 		//-----------------------------------------
 		// Client side events
 
 
+		var nobubble = function(e) { e&&e.preventDefault&&e.preventDefault(); e&&e.stopPropagation&&e.stopPropagation(); return false;};
+
 		//Challenge a spieler to a match
 		var doChallengeSpieler = function(e) {
 			var challenged = $(this).parents(".spieler:first").attr("data-spieler");
 			var data = {challenger:_username,challenged:challenged};
-			_socket.emit("challenge",data);			
+			_socket.emit("challenge",data);	
 		}
 
 		//Mouseover spieler elements, show tooltip
 		var doHoverEnter = function(e) {
+			if ($(this).parents("#lobby").length) return;
 			var spieler = $(this);
 			var player = spieler.attr("data-spieler");
 			var offset = $(this).offset(), top, left;
 			if (offset && (top=offset.top) && (left=offset.left)) {
-				var content = $(this).hasClass("online") ? (player===_username?_tipOnlineI:_tipOnline) : _tipOffline;
+				var content = $(this).hasClass("online") ? (player===_username?"tooltipself":"tooltiponline") : "tooltipoffline";
 				var height  = $(this).innerHeight();
 				var width   = $(this).innerWidth();
 				top  = top  + height + 'px';
 				left = left + 'px';
-				spieler.append(_tooltip.show().css({top:top,left:left}).html(content));
+				spieler.render(content).find('.tooltip').css({top:top,left:left}).show();
 			}
-			e.stopPropagation();
-			e.preventDefault();
-			return false;
+			return nobubble(e);
 		};
 							
 		//Mouseout spieler elements, remove tooltip
 		var doHoverLeave = function(e) {
+			if ($(this).parents("#lobby").length) return;
 			$(this).find(".tooltip").remove();
-			e.stopPropagation();
-			e.preventDefault();
-			return false;
+			return nobubble(e);
 		};
 		
 		var doChatSpieler = function(e) {
 			var spieler = $(this).parents(".spieler:first").attr("data-spieler");
 			if (spieler !== _username) onLobbyChat({from:_username,to:spieler}); 
-			e.stopPropagation();
-			e.preventDefault();
-			return false;
+			return nobubble(e);
 		};
 		
 		var doChatSubmit = function(e) {
@@ -158,12 +156,35 @@ if(!kriegspiel.lobby) {
 			var message  = chattext.val();
 			_socket.emit('lobbychat',{from:_username,to:spieler,text:message});
 			chattext.val('');
-			e.stopPropagation();
-			e.preventDefault();
-			return false;
+			return nobubble(e);
+		}
+
+		var doLobbyDisplay = function(e,open) {
+			var icon  = $("#lobby > #icon");
+			var panel = $("#lobby > #panel");
+			if (panel.data("open") && !open) {
+				icon.attr("src",icon.attr("data-flop")).removeClass("open");
+				panel.hide('fast').data("open",false);
+			} else {
+				icon.attr("src",icon.attr("data-flip")).addClass("open");
+				panel.show('fast').data("open",true);
+			}
+			return nobubble(e);
 		}
 		
-		
+		var doListDisplay = function(e) {
+			var source = $(this);
+			var target = $(this).next();
+			if (target.is(":visible")) {
+				target.hide('fast');
+				source.find('span').text('^');
+			} else {
+				target.show('fast');
+				source.find('span').text('>');	
+			}
+			return nobubble(e);
+		}
+
 		//---------------------------------------------
 		// Client API
 		
@@ -185,7 +206,7 @@ if(!kriegspiel.lobby) {
 		
 		var init = function(room){
 
-			//Checks for an existing session, and toggles the login box/session info respectively
+			//Checks for an existing session, and enables the lobby if successful
 			$.get("/session",function(data,status){
 				if(status==="success" && data && data.username) {
 					_username = data.username
@@ -200,22 +221,23 @@ if(!kriegspiel.lobby) {
 					$("body")
 						.on("mouseenter",".spieler",doHoverEnter)
 						.on("mouseleave",".spieler",doHoverLeave)
-						.on("click",".spieler .chat",doChatSpieler)
+						.on("click",".spieler .chatstart",doChatSpieler)
 						.on("click",".spieler .challenge",doChallengeSpieler)
-						.append(tmplonline)	
-						.append(tmplchatbox)
-						.append(tmplchatmessage)		
-						.append("<div id='lobby'><ul id='online'></ul><ul id='chats'></ul></div>")
 						
-					$("#lobby").on("submit",".chatform",doChatSubmit);		
+					$("#lobby")
+						.show()
+						.on("click","h3",doListDisplay)
+						.on("click","#icon",doLobbyDisplay)
+						.on("submit",".chatform",doChatSubmit);		
+					
+					$("#lobby > #panel > h2").text(_username);					
 					
 					$.get("/online",function(data,status){
 						if(status==="success" && data) {
-							_online = data.online;
 							$(".spieler").removeClass("online");
-							for(var i=0,l=_online.length;i<l;i++) {
-								$("#online").render("online",{spieler:_online[i]});
-								onLobbyAdd({username:_online[i]});
+							for(var i=0,l=data.online.length;i<l;i++) {
+								//$("#online").render("lobbyonline",{spieler:_online[i]});
+								onLobbyAdd({username:data.online[i]});
 							}
 						}
 					});

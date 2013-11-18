@@ -352,6 +352,7 @@ article hr {
 	padding:10px;
 	background-color:#fff;
 	color:#333;
+	z-index: 1010;
 }
 
 #game,#replay {
@@ -589,16 +590,60 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 .spielercolumn { text-align:center; }
 
 #lobby {
+	display:none;
 	position:fixed;
 	top:0px;
 	right:0px;
-	width:200px;
 	border:1px solid #ccc;
 	background-color:#fff;
-	padding:5px;
+	padding:0px;
+	z-index: 505;
 }
 
-#lobby > #chats {
+#lobby > #icon {
+	float:right;
+	margin-bottom:2px;
+	margin-left:1px;
+	border:0px;
+}
+
+#lobby > #icon.open {
+	background-color: #606060;
+	margin-bottom:0px;
+	margin-left:0px;
+	border-bottom:2px solid #606060;
+	border-left:1px;
+}
+
+#lobby > #panel {
+	display:none;
+	width:200px;
+}
+
+#lobby h2 {
+	margin:0px;
+	padding-top:4px;
+	padding-left:4px;
+	line-height: 30px;
+	color:#fff;
+	background-color: #606060;
+}
+
+#lobby h3 {
+	margin:0px;
+	padding-top:4px;
+	padding-left:4px;
+	line-height: 30px;
+	border-top:1px solid #ccc;
+}
+
+#lobby > #panel > #online {
+	margin:0px;
+	padding:0px;
+	list-style-type: none;
+}
+
+#lobby > #panel > #chats {
 	margin:0px;
 	padding:0px;
 	list-style-type: none;
@@ -608,11 +653,35 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 	border:1px solid #ccc;
 }
 
-.chatbox > h3 {
+.chatbox > h4 {
 	margin:5px;
 	margin-left:2px;
 }
 
+.chatmessage {
+	border:1px solid #daeae7;
+	border-radius:4px;
+	padding:4px;
+	width:180px;
+}
+
+.chatmessage.to {
+	margin-left:20px;
+}
+
+.chattext {
+	width:196px;
+}
+
 .inline {
 	display:inline-block;
+}
+
+.td1 {
+	width:148px;
+	font-size: 18px;
+	line-height:24px;
+	margin:0px;
+	padding:0px;
+	padding-left:10px;  
 }

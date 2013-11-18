@@ -1,8 +1,9 @@
 (function(){
 
+	var _socket   = window._socket;
+	if(!_socket) _socket = window._socket = io.connect('http://'+document.domain);
+
 	var _username = null;
-	var _socket   = io.connect('http://'+document.domain);
-	var onehalf   = $("script[data-template='half']").html();
 
  	var querystring = function(key,url){
 	  url = url || window.location.search;
@@ -38,27 +39,6 @@
 		$(document.body).append(banner);
 	};
 	
-	//Naive jquery render
-	$.fn.render = function(template,data,map) {
-		var $target = this;
-		var source = $("script[data-template='"+template+"']").html();
-		data = (data instanceof Array) ? data:[data]; 
-		for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
-			record = data[i];
-			if (typeof map !== 'function' || map(record)) {  
-				html = source;
-				for(var key in record) { 
-					if(record.hasOwnProperty(key)) {
-						rekey = new RegExp("\{\{"+key+"\}\}","g");
-						html  = html.replace(rekey,record[key]);
-					}
-				}
-				$target.append(html.replace(/0\.5/g,onehalf).replace(/\.5/g,onehalf));
-			}
-		};
-		return $target;
-	}
-
 	//-----------------------------------------
 	//Client events	
 	var nobubble = function(e) { e.preventDefault&&e.preventDefault(); e.stopPropagation&&e.stopPropagation(); return false;};
