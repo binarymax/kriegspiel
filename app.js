@@ -184,6 +184,30 @@ app.post('/start/?', security.authenticateUser, function(req,res) {
 });
 
 
+app.get('/challenges/:gameid', security.authenticateUser, function(req,res) {
+	var gameid = req.params.gameid;
+	var username = req.session.username;
+	if (okId(gameid)) {
+		spiel.exists(gameid,function(dbgameid){
+			if(gameid) {
+				res.redirect('/games/'+gameid);
+			} else {
+				var variant = 'lovenheim';
+				var color   = Math.floor(Math.random()*100)%2?'white':'black';
+				var player  = req.session.username;
+				var rated   = true;
+				spiel.add(gameid,variant,color,player,rated,function(game){
+					res.redirect('/games/'+gameid);
+				});
+			}
+		});
+	} else {
+		badId(res);
+	}
+});
+
+
+
 //Gets a list of games
 app.get('/games/?', security.authenticateUser, function(req,res) {
  
@@ -209,19 +233,8 @@ app.get('/games/?', security.authenticateUser, function(req,res) {
 		
 	} else if (req && req.session && req.session.username) {
 		//Get the user's games (both as black and white)
-		var username = req.session.username;
-		
+		var username = req.session.username;		
 		db.findGamesByPlayerAndState(username,state,formatgame,sender(res));		
-		
-		/*
-		var merge = merger(2,res);
-		
-		//Get the user's games as white
-		db.findGamesByFilter({state:state,rated:true,whiteusername:username},formatgame,merge);
-		
-		//Get the user's games as black
-		db.findGamesByFilter({state:state,rated:true,blackusername:username},formatgame,merge);
-		*/
 		
 	} else {
 		//No session, No data for you!
