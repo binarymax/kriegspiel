@@ -60,14 +60,14 @@ if(!kriegspiel.lobby) {
 		//A Spieler hath challenged thee!
 		var onLobbyChallengeAccepted = function(data) {
 			if (data.challenged && data.challenger===_username) {
-				alert('accepted!');
+				setTimeout(function(){location.href=data.url;},50);
 			}
 		}
 
 		//A Spieler hath challenged thee!
 		var onLobbyChallengeDeclined = function(data) {
 			if (data.challenged && data.challenger===_username) {
-				alert('declined!');
+				alert(data.challenged + ' has respectfully declined your challenge.');
 			}
 		}
 
@@ -77,7 +77,7 @@ if(!kriegspiel.lobby) {
 				var message = data.challenger + " has challenged you to a game of kriegspiel!  Do you accept the challenge?";
 				if (window.confirm(message)) {
 					_socket.emit("acceptchallenge",data);
-					//location.href=url;
+					location.href=data.url;
 				} else {
 					_socket.emit("declinechallenge",data);
 				}
@@ -104,6 +104,13 @@ if(!kriegspiel.lobby) {
 			if (data.text) chatbox.render("lobbychatmessage",data);
 			$("#lobby > #panel > #chats").show();
 			doLobbyDisplay(null,true);
+		}
+
+		//Chat message Received
+		var onLobbyChats = function(data){
+			for(var i=data.length-1;i>-1;i--) {
+				onLobbyChat(data[i]);
+			}
 		}
 
 		//-----------------------------------------
@@ -145,7 +152,11 @@ if(!kriegspiel.lobby) {
 		
 		var doChatSpieler = function(e) {
 			var spieler = $(this).parents(".spieler:first").attr("data-spieler");
-			if (spieler !== _username) onLobbyChat({from:_username,to:spieler}); 
+			var data    = {from:_username,to:spieler};
+			if (spieler !== _username) {
+				onLobbyChat(data);
+				_socket.emit('lobbychats',data);
+			} 
 			return nobubble(e);
 		};
 		
@@ -213,6 +224,7 @@ if(!kriegspiel.lobby) {
 
 					_socket.on('lobbyadd', onLobbyAdd);
 					_socket.on('lobbychat', onLobbyChat);
+					_socket.on('lobbychats', onLobbyChats);
 					_socket.on('lobbyremove', onLobbyRemove);
 					_socket.on('lobbychallenge', onLobbyChallenge);
 					_socket.on('lobbychallengeaccept', onLobbyChallengeAccepted);
