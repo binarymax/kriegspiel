@@ -12,7 +12,7 @@ if(!kriegspiel.lobby) {
 		//Naive jquery render
 		$.fn.render = function(template,data,map) {
 			var $target = this;
-			var source = $("script[data-template='"+template+"']").html();
+			var source = $("script[data-template='"+template+"']").html().replace(/^\s*/,'').replace(/\s*$/,'');
 			data = (data instanceof Array) ? data:[data]; 
 			for(var i=0,l=data.length,html,record,rekey;i<l;i++) {
 				record = data[i];
@@ -83,27 +83,40 @@ if(!kriegspiel.lobby) {
 				}
 			}
 		}
-		
+
 		//Gets a Chatbox UI
 		var getChatbox = function(spieler){
-			var selector = "#chats > .chatbox[data-spieler='"+spieler+"'] > .chatbody > .chatlist";
+			var selector = "#lobby > #panel > .chatbox[data-spieler='"+spieler+"']";
 			var chatbox = $(selector);
 			if(!chatbox.length) {
-				$("#chats").render("lobbychatbox",{spieler:spieler});
+				$("#panel").render("lobbychatbox",{spieler:spieler});
 				chatbox = $(selector);
 			}
+			chatbox.show();
+			doLobbyDisplay(null,true);
 			return chatbox;
 		}
 		
+		//Gets a Chatbox UI Message List
+		var getChatlist = function(spieler){
+			return getChatbox(spieler).find(".chatbody > .chatlist");
+		}
+		
+		//Gets a Chatbox UI Message List
+		var getChattext = function(spieler){
+			return getChatbox(spieler).find(".chattext");
+		}
+
 		//Chat message Received
 		var onLobbyChat = function(data){
 			var spieler;
 			if (_username === data.to) { spieler = data.from; data.msgclass="to"; } 
 			if (_username === data.from) { spieler = data.to; data.msgclass="from"; }
-			var chatbox = getChatbox(spieler);
-			if (data.text) chatbox.render("lobbychatmessage",data);
-			$("#lobby > #panel > #chats").show();
-			doLobbyDisplay(null,true);
+			var chatlist = getChatlist(spieler);
+			if (data.text && !chatlist.find(".chatmessage[data-sent='"+data.sent+"']").length) {
+				chatlist.render("lobbychatmessage",data);
+			}
+			getChattext(spieler).focus();
 		}
 
 		//Chat message Received
@@ -173,12 +186,15 @@ if(!kriegspiel.lobby) {
 		var doLobbyDisplay = function(e,open) {
 			var icon  = $("#lobby > #icon");
 			var panel = $("#lobby > #panel");
+			var title = $("#lobby > h2");
 			if (panel.data("open") && !open) {
 				icon.attr("src",icon.attr("data-flop")).removeClass("open");
 				panel.hide('fast').data("open",false);
+				title.hide('fast').data("open",false);
 			} else {
 				icon.attr("src",icon.attr("data-flip")).addClass("open");
 				panel.show('fast').data("open",true);
+				title.show('fast').data("open",true);
 			}
 			return nobubble(e);
 		}
@@ -242,7 +258,7 @@ if(!kriegspiel.lobby) {
 						.on("click","#icon",doLobbyDisplay)
 						.on("submit",".chatform",doChatSubmit);		
 					
-					$("#lobby > #panel > h2").text(_username);					
+					$("#lobby > h2").text(_username);					
 					
 					$.get("/online",function(data,status){
 						if(status==="success" && data) {

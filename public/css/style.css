@@ -617,10 +617,30 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 
 #lobby > #panel {
 	display:none;
-	width:200px;
+	min-width:200px;
+	max-width:320px;
+	max-height:480px;
+	overflow-y: scroll;
 }
 
-#lobby h2 {
+#lobby > #panel::-webkit-scrollbar
+{
+  width: 6px;  /* for vertical scrollbars */
+  height: 6px;  /* for horizontal scrollbars */
+}
+
+#lobby > #panel::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+#lobby > #panel::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
+
+#lobby > h2 {
+	display:none;
 	margin:0px;
 	padding-top:4px;
 	padding-left:4px;
@@ -659,15 +679,27 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 }
 
 .chatmessage {
-	border:1px solid #daeae7;
+	margin-top:2px;
+	margin-bottom:2px;
 	border-radius:4px;
 	padding:4px;
-	width:180px;
+	width:176px;
+	font-size:14px;
 }
 
 .chatmessage.to {
 	margin-left:20px;
+	margin-right:4px;
+	border:1px solid #daeae7;
+	background-color: #fff;
 }
+
+.chatmessage.from {
+	margin-left:4px;
+	border:1px solid #d3e1de;
+	background-color:#daeae7;
+}
+
 
 .chattext {
 	width:196px;
