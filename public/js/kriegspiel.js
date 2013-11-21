@@ -6,8 +6,7 @@
 * Client Side Game Logic
 *
 *******************************************/
-
-var kriegspiel = (function() {
+var kriegspiel = window.kriegspiel = (function() {
 
 	var _socket   = window._socket;
 	if(!_socket) _socket = window._socket = io.connect('http://'+document.domain);

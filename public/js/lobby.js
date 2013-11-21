@@ -1,3 +1,11 @@
+/******************************************
+* KRIEGSPIEL
+*   Copyright 2013, Max Irwin
+*   MIT License
+*
+* Lobby Chat Room
+*
+*******************************************/
 var kriegspiel = window.kriegspiel;
 	kriegspiel = kriegspiel||{};
 if(!kriegspiel.lobby) {
@@ -30,6 +38,21 @@ if(!kriegspiel.lobby) {
 			return $target;
 		}
 
+		//Scroll the to the bottom
+		var scrollId = 0;
+		var scroller = function() {
+			var $list = $("#panel > *");
+			var $panel = $("#panel");
+			clearTimeout(scrollId);
+			scrollId = setTimeout(function(){
+				//Scroll to the bottom
+				var top = 0;
+				$list.each(function(){top+=$(this).outerHeight(true);});
+				$panel.finish().animate({scrollTop:top},500);
+			},100);		
+		}
+
+
 		//A Spieler joined the lobby
 		var onLobbyAdd = function(data) {
 			$(".spieler[data-spieler='"+data.username+"']").addClass("online");
@@ -42,6 +65,7 @@ if(!kriegspiel.lobby) {
 			if (f===-1) {
 				_online.push(data.username);
 				if(data.username!==_username) $("#online").render("lobbyonline",data);
+				scroller();
 			}
 		}
 		
@@ -107,6 +131,25 @@ if(!kriegspiel.lobby) {
 			return getChatbox(spieler).find(".chattext");
 		}
 
+		//Fixes long text to wrap with hyphens		
+		var fixText = function(text) {
+			var reWord = /\s/;
+			var maxlen = 25;
+			var words = text.split(reWord);
+			for(var i=0,l=words.length,word,repl;i<l;i++) {
+				word = '';
+				repl = words[i];
+				if(repl.length>maxlen) {
+					while (repl.length>maxlen) {
+						word += repl.substr(0,maxlen) + '- ';
+						repl  = repl.substr(maxlen);
+					}
+					text = text.replace(words[i],word+repl);
+				}
+			}
+			return text;
+		}
+
 		//Chat message Received
 		var onLobbyChat = function(data){
 			var spieler;
@@ -114,8 +157,10 @@ if(!kriegspiel.lobby) {
 			if (_username === data.from) { spieler = data.to; data.msgclass="from"; }
 			var chatlist = getChatlist(spieler);
 			if (data.text && !chatlist.find(".chatmessage[data-sent='"+data.sent+"']").length) {
+				data.text = fixText(data.text);
 				chatlist.render("lobbychatmessage",data);
 			}
+			scroller();
 			getChattext(spieler).focus();
 		}
 
