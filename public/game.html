@@ -4,7 +4,7 @@
 <title>KRIEGSPIEL</title>
 <meta name="robots" content="NOINDEX, NOFOLLOW">
 <meta name="author" content="Max Irwin" >
-<meta name="date" content="2013-11-11T10:51:50+0000" >
+<meta name="date" content="2013-11-22T11:48:39+0000" >
 <meta name="copyright" content="Max Irwin">
 <meta name="keywords" content="kriegspiel, chess, game, variant">
 <meta name="description" content="The Kriegspiel chess variant">
@@ -54,11 +54,11 @@
 		</div>
 		
 		<div id="pawncapturesdialog" class="dialog">
-			Checking for pawn captures...
+			Checking if you have any available pawn captures...
 		</div>
 
 		<div id="occupiesdialog" class="dialog">
-			Choose a square to reveal<br>
+			Choose a square highlighted in red to reveal.<br>
 			<button id="occupiescancel" class="option">Cancel</button>
 		</div>
 
@@ -168,7 +168,7 @@
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-illegal">
-		When an illegal move is made, the piece is moved back to its original square.  Both players are told that the illegal move was attempted, and which square the piece targeted.
+		You may have moved into check, or there might be something in the way.  When an illegal move is made, the piece is moved back to its original square.  Both players are told that the illegal move was attempted, and which square the piece targeted.
 	</script>
 
 	<script type="text/template" data-type="template" data-template="tutorial-promoted-player">

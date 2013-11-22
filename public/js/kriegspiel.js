@@ -470,10 +470,15 @@ var kriegspiel = window.kriegspiel = (function() {
 	var drop = function(source, target, piece, newPos, oldPos, orientation) {
 		var promotion = null;
 		var color = piece.charAt(0);
-		if (color!==_color.charAt(0)) {
-			//Player is just messing around with opposing pieces
-			return true;
-		} if (!_active) {
+		if (color!==_color.charAt(0)) {			
+			if (!oldPos[target] || oldPos[target].charAt(0)!==_color.charAt(0)) {
+				//Player is just messing around with opposing pieces
+				return true;
+			} else {
+				//Not allowed to replace your own pieces!
+				return 'snapback';
+			}
+		} else if (!_active) {
 			//Not your turn!
 			return 'snapback';
 		} else if(source === 'spare') {
