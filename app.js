@@ -301,7 +301,7 @@ app.get('/replays/?',function(req,res){
 	} else { 
 
 		//Gets all the finished games:
-		db.findGamesByFilter({state:spiel.state('finished'),rated:true},formatgame,sender(res));
+		db.findGamesByFilter({state:spiel.state('finished')},formatgame,sender(res));
 	}
 	
 });

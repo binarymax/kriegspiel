@@ -352,7 +352,7 @@ article hr {
 	padding:10px;
 	background-color:#fff;
 	color:#333;
-	z-index: 1010;
+	z-index: 1515;
 }
 
 #game,#replay {
@@ -597,7 +597,7 @@ ul.discs { list-style-type:circle; margin-left:50px; }
 	border:1px solid #ccc;
 	background-color:#fff;
 	padding:0px;
-	z-index: 505;
+	z-index: 1010;
 }
 
 #lobby > #icon {
