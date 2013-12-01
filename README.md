@@ -1,4 +1,5 @@
 kriegspiel
 ==========
 
-The Kriiegspiel chess variant, playable on the web
+The Kriegspiel chess variant, playable on the web
+http://krgspl.com
