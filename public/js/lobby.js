@@ -92,6 +92,7 @@ if(!kriegspiel.lobby) {
 		var onLobbyChallengeDeclined = function(data) {
 			if (data.challenged && data.challenger===_username) {
 				alert(data.challenged + ' has respectfully declined your challenge.');
+				$('.spieler[data-spieler="'+data.challenged+'"] td2').removeClass("wait");
 			}
 		}
 
@@ -179,8 +180,10 @@ if(!kriegspiel.lobby) {
 
 		//Challenge a spieler to a match
 		var doChallengeSpieler = function(e) {
-			var challenged = $(this).parents(".spieler:first").attr("data-spieler");
+			var icon = $(this);			
+			var challenged = icon.parents(".spieler:first").attr("data-spieler");
 			var data = {challenger:_username,challenged:challenged};
+			icon.removeClass("challenge").addClass("disabled").addClass("wait");			
 			_socket.emit("challenge",data);	
 		}
 
