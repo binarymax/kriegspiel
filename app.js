@@ -113,7 +113,7 @@ var formatgame = function(rec) {
 		result:fin,
 		rated:rec.rated?'Rated':'Unrated',
 		startdate:rec.startdate,
-		enddate:rec.enddate?rec.enddate.toDateString():''
+		enddate:(rec.enddate&&rec.enddate.toDateString)?rec.enddate.toDateString():''
 	};
 
 	if (rec.state===spiel.state('inactive')) { 
