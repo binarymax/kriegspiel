@@ -1,0 +1,54 @@
+Kriegspiel Strategy Guide
+by Max Irwin
+
+Hello fellow spieler!  This is a basic strategy guide to help you improve your Kriegspiel game and maximize your effectiveness on the board.  If you have already played a game or two of Kriegspiel, you should have noticed that while the fundamental rules are the same as chess, the strategy is vastly different.  There are four main sections that will be covered in this short guide: Deduction, Security, Secrecy, and Deception.  Due to the relative obscurity of the game, there is not much literature on the subject.  And as there are no established masters or experts of the game, there are few to learn from.  Until the game gains more maturity and following, this simple guide can provide the core fundamentals to be expanded on at a later time.
+
+1. Deduction
+------------
+
+a. Keeping Track of Material
+The main skill needed when playing Kriegspiel, is the ability to deduce where your opponent's pieces are and what pieces have been captured.  The most important thing you can do when playing, is making sure you keep track of how many pieces you have captured, and what those pieces most likely are.  If you lose count, it can be a fatal mistake.  Likewise, if you mistake a captured pawn as a queen, you will be surprised later in the game.  When in doubt, it is considered good practice to always underestimate the types of pieces you have captured.  For instance, if you are white and capture a piece on e7 on the third move - you are better off guessing the piece is a pawn, rather than the black-squared bishop or kingside knight.  If you are wrong, there is usually little harm done.  Also, it is good to remember that not all material is equal.  If you make an even material exchange and you are certain of the type of piece you captured, that information is very important.  
+
+b. Pawn Structure
+The pawn structure of your opponent is the front of the battlefield.  The senior officers lie behind this front, and penetrating it successfully will give you a significant advantage.  Being able to navigate your pieces without risk of being detected by available pawn captures and will give you the opportunity you need to capture larger or unguarded material.  For example, if you are white and you know that black has moved their pawn to g6, you can sneak your bishop onto h6, then g7, then h8, possibly snaring a piece or two in the process.  
+
+c. The Enemy King
+Throughout the game, do your best to keep track of where your opponent's king is.  It is crucial to know the king's general location during the middlegame and endgame.  If you know your opponent has castled queenside, targeting an attack there can bring victory.
+ 
+
+2. Security
+------------
+
+a. Prepare for the worst
+Never leave your king unguarded and never allow for checkmate.  It is considered good practice to defend against fools mate, and when castling be sure that you are not vulnerable to an attack.  For example, when castling kingside, the g-pawn is a weak spot.  Don't give your opponent the chance of an easy win by leaving it undefended.
+
+b. Defend your major and minor pieces
+Use the tools at your disposal.  Use your pawns as alarms that will be set off with the available pawn captures option.  Also use the reveal square option to make sure you are safe.  For example, if you are white and have a knight on f6, you can move your h pawn to h6 to defend against g5, or use reveal square on g5 to see if your opponent snuck in a pawn to capture you.  Be aware at all times against potential threats.   
+
+c. Escorts and backup
+Since surprise from your opponent lurks at every move, you need to be prepared.  Make sure your pieces are well defended in anticipation that anything can and will go wrong.  While in chess you can have confident in moving your pieces past the 4th rank - to do so nonchalantly in kriegspiel can result in peril.  Use pawns to support squares you plan to move to, and bring backup in most situations.  As the concept of tempo is more abstract in Kriegspiel, it is usually worth using additional moves to make sure your attacks are escorted. 
+
+
+3. Secrecy
+------------
+
+a. Loose Lips Sink Ships
+Divulge as little information as possible.
+
+b. Your Pawn structure
+If you have an available pawn capture, don't make the mistake of trying every single pawn capture on the board.  Think of the likely squares and limit your choices.  Remember, you only need to attempt one pawn capture.  
+
+c. Your King
+
+
+4. Deception
+------------
+
+a. Opening Theory
+Deception is a more advanced technique that adds subtlety and beauty to the game of Kriegspiel.  Watching your opponent writhe in confusion while you crush them is a deeply satisfying experience.  The opening theory of Kriegspiel is not as well proven as that of chess, but there are trends that will aide your campaign.  For instance, while most modern chess theory focusses on controlling the center, there is debate on whether this is as important in Kriegspiel.  It is wise to protect your king, but castling may not always be a good option.  Most importantly, be inventive.  Don't be an open book by playing the same opening game after game.  Mix it up and make wild yet decisive moves.  Little information known about your position is good, but incorrect information about your position is better.  
+
+b. The Spy
+A spy is a good way to both gather information and confuse your opponent.  Send a bishop behind enemy lines and reveal a square, then retreat back to safety.  Your opponent will see you doing odd things in their territory and become frightened, and you will gain information about the position.  Used effectively, the spy is a powerful weapon. 
+
+c. Ambiguous Information
+A more risky tactic, but effective when used correctly, is to overload your opponent's pawn capture option.  When requesting pawn captures, it will say yes or no - not how many.  Use this to your advantage by leaving a pawn capture available, while introducing another.  Your opponent may think the first pawn capture is unchanged and overlook the second. 
